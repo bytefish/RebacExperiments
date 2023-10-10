@@ -26,16 +26,7 @@ GO
 :r .\Identity\pds-100-ins-identity-users.sql
 GO
 
-:r .\Identity\pds-110-ins-identity-roles.sql
-GO
-
-:r .\Identity\pds-120-ins-identity-user-role.sql
-GO
-
-:r .\Identity\pds-130-ins-identity-role-claim.sql
-GO
-
-:r .\Identity\pds-140-ins-identity-relation-tuples.sql
+:r .\Identity\pds-110-ins-identity-relation-tuples.sql
 GO
 
 /* 
@@ -48,6 +39,12 @@ GO
 GO
 
 :r .\Application\pds-120-ins-application-user-task.sql
+GO
+
+:r .\Application\pds-130-ins-application-organization.sql
+GO
+
+:r .\Application\pds-140-ins-application-team.sql
 GO
 
 /*
