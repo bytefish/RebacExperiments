@@ -1,4 +1,4 @@
-﻿PRINT 'Inserting [Application].[UserTaskStatus] ...'
+﻿PRINT 'Inserting [Application].[Team] ...'
 
 -----------------------------------------------
 -- Global Parameters
@@ -7,7 +7,7 @@ DECLARE @ValidFrom datetime2(7) = '20130101'
 DECLARE @ValidTo datetime2(7) =  '99991231 23:59:59.9999999'
 
 -----------------------------------------------
--- [Application].[UserTask]
+-- [Application].[Team]
 -----------------------------------------------
 MERGE INTO [Application].[Team] AS [Target]
 USING (VALUES 
