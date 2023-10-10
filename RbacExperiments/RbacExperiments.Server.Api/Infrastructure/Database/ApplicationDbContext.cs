@@ -68,20 +68,20 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
         /// <param name="userId">UserID</param>
         /// <param name="relation">Relation between the User and UserTask</param>
         /// <returns>All <typeparamref name="TEntityType"/> the user is related to</returns>
-        public IQueryable<TEntityType> GetEntitiesByRelation<TEntityType>(int userId, string relation)
+        public IQueryable<TEntityType> GetEntitiesByUserAndRelation<TEntityType>(int userId, string relation)
             where TEntityType : class
         {
             // Get the Metadata (Entity Name, Fully Qualified Table Name, PrimaryKeyName, ...
             var entityMetadata = GetEntityMetadata<TEntityType>();
             
-            // Probably not perfect to construct the Query this way, but it's so easy...
+            // Looks a little bit horrible, but it works, so ...
             var sql = @$"SELECT {entityMetadata.SchemaQualifiedTableName}.*
                          FROM [Identity].tvf_RelationTuples_ListObjects('{entityMetadata.EntityName}', '{relation}', 'User', {userId}) as ""user_objects""
 			                INNER JOIN {entityMetadata.SchemaQualifiedTableName} ON {entityMetadata.SchemaQualifiedTableName}.{entityMetadata.PrimaryKeyName} = ""user_objects"".ObjectKey";
 
             return Set<TEntityType>()
                 .FromSqlRaw(sql)
-                .AsNoTracking();
+                .AsNoTracking(); // Should we really use NoTracking here?
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -178,6 +178,48 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
                     .HasColumnType("INT")
                     .HasColumnName("OrganizationID")
                     .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Organization]")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name)
+                    .HasColumnType("NVARCHAR(255)")
+                    .HasColumnName("Name")
+                    .IsRequired(true)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Description)
+                    .HasColumnType("NVARCHAR(2000)")
+                    .HasColumnName("Description")
+                    .IsRequired(true)
+                    .HasMaxLength(2000);
+
+                entity.Property(e => e.ValidFrom)
+                    .HasColumnType("DATETIME2(7)")
+                    .HasColumnName("ValidFrom")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.ValidTo)
+                    .HasColumnType("DATETIME2(7)")
+                    .HasColumnName("ValidTo")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.LastEditedBy)
+                    .HasColumnType("INT")
+                    .HasColumnName("LastEditedBy")
+                    .IsRequired(true);
+            });
+
+            modelBuilder.Entity<Organization>(entity =>
+            {
+                entity.ToTable("Team", "Application");
+
+                entity.HasKey(e => e.OrganizationId);
+
+                entity.Property(x => x.OrganizationId)
+                    .HasColumnType("INT")
+                    .HasColumnName("TeamID")
+                    .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Team]")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name)
