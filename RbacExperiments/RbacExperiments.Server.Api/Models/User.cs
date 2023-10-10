@@ -20,7 +20,7 @@
         /// <summary>
         /// Gets or sets the IsPermittedToLogon.
         /// </summary>
-        public int IsPermittedToLogon { get; set; }
+        public bool IsPermittedToLogon { get; set; }
 
         /// <summary>
         /// Gets or sets the LogonName.

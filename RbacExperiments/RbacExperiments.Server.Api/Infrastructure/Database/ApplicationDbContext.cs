@@ -184,6 +184,10 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
                     .IsRequired(true);
             });
 
+            modelBuilder.HasSequence<int>("sq_Team", schema: "Application")
+                .StartsAt(38187)
+                .IncrementsBy(1);
+
             modelBuilder.Entity<Team>(entity =>
             {
                 entity.ToTable("Team", "Application");
@@ -225,7 +229,11 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
                     .HasColumnName("LastEditedBy")
                     .IsRequired(true);
             });
-            
+
+            modelBuilder.HasSequence<int>("sq_RelationTuple", schema: "Identity")
+                .StartsAt(38187)
+                .IncrementsBy(1);
+
             modelBuilder.Entity<RelationTuple>(entity =>
             {
                 entity.ToTable("RelationTuple", "Identity");
@@ -290,6 +298,68 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
                     .IsRequired(true);
             });
 
+            modelBuilder.HasSequence<int>("sq_User", schema: "Identity")
+                .StartsAt(38187)
+                .IncrementsBy(1);
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("User", "Identity");
+
+                entity.HasKey(e => e.UserId);
+
+                entity.Property(x => x.UserId)
+                    .HasColumnType("INT")
+                    .HasColumnName("UserID")
+                    .HasDefaultValueSql("NEXT VALUE FOR [Identity].[sq_User]")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.FullName)
+                    .HasColumnType("NVARCHAR(50)")
+                    .HasColumnName("FullName")
+                    .IsRequired(true)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.PreferredName)
+                    .HasColumnType("NVARCHAR(50)")
+                    .HasColumnName("PreferredName")
+                    .IsRequired(true)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.IsPermittedToLogon)
+                    .HasColumnType("BIT")
+                    .HasColumnName("IsPermittedToLogon")
+                    .IsRequired(true)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.LogonName)
+                    .HasColumnType("NVARCHAR(256)")
+                    .HasColumnName("LogonName")
+                    .IsRequired(false)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.HashedPassword)
+                    .HasColumnType("NVARCHAR(MAX)")
+                    .HasColumnName("HashedPassword")
+                    .IsRequired(false);
+
+                entity.Property(e => e.ValidFrom)
+                    .HasColumnType("DATETIME2(7)")
+                    .HasColumnName("ValidFrom")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.ValidTo)
+                    .HasColumnType("DATETIME2(7)")
+                    .HasColumnName("ValidTo")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.LastEditedBy)
+                    .HasColumnType("INT")
+                    .HasColumnName("LastEditedBy")
+                    .IsRequired(true);
+            });
 
             base.OnModelCreating(modelBuilder);
         }
