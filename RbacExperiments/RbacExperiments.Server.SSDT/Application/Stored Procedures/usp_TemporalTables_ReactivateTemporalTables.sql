@@ -25,4 +25,20 @@ AS BEGIN
 		ALTER TABLE [Application].[UserTaskStatus] SET (SYSTEM_VERSIONING = ON (HISTORY_TABLE = [Application].[UserTaskStatusHistory], DATA_CONSISTENCY_CHECK = ON));
 	END
     
+	IF OBJECTPROPERTY(OBJECT_ID('[Application].[Organization]'), 'TableTemporalType') = 0
+	BEGIN
+		PRINT 'Reactivate Temporal Table for [Application].[Organization]'
+
+		ALTER TABLE [Application].[Organization] ADD PERIOD FOR SYSTEM_TIME([ValidFrom], [ValidTo]);
+		ALTER TABLE [Application].[Organization] SET (SYSTEM_VERSIONING = ON (HISTORY_TABLE = [Application].[OrganizationHistory], DATA_CONSISTENCY_CHECK = ON));
+	END
+    
+	IF OBJECTPROPERTY(OBJECT_ID('[Application].[Team]'), 'TableTemporalType') = 0
+	BEGIN
+		PRINT 'Reactivate Temporal Table for [Application].[Team]'
+
+		ALTER TABLE [Application].[Team] ADD PERIOD FOR SYSTEM_TIME([ValidFrom], [ValidTo]);
+		ALTER TABLE [Application].[Team] SET (SYSTEM_VERSIONING = ON (HISTORY_TABLE = [Application].[TeamHistory], DATA_CONSISTENCY_CHECK = ON));
+	END
+    
 END
