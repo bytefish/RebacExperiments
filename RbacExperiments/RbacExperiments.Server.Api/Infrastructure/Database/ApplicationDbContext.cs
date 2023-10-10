@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Hosting;
 using RbacExperiments.Server.Api.Models;
-using System;
 
 namespace RbacExperiments.Server.Api.Infrastructure.Database
 {
@@ -26,63 +23,15 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
         public DbSet<UserTask> UserTasks { get; set; } = null!;
 
         /// <summary>
-        /// Gets the Metadata of the Type <typeparamref name="TEntityType"/>.
+        /// Gets or sets the UserTasks.
         /// </summary>
-        /// <typeparam name="TEntityType">Entity Type to get Data from</typeparam>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException">Thrown when Entity Metadata cannot be determined</exception>
-        private (string EntityName, string SchemaQualifiedTableName, string PrimaryKeyName) GetEntityMetadata<TEntityType>()
-        {
-            var entityType = typeof(TEntityType);
-
-            var modelEntityType = Model.FindEntityType(entityType);
-
-            if(modelEntityType == null)
-            {
-                throw new InvalidOperationException($"Cannot find Mapping for Entity Type '{entityType}");
-            }
-
-            var schemaQualifiedTableName = modelEntityType.GetSchemaQualifiedTableName();
-            
-            if(schemaQualifiedTableName == null)
-            {
-                throw new InvalidOperationException($"Cannot find Table for Entity Type '{entityType}");
-            }
-
-            var primaryKeyName = modelEntityType.FindPrimaryKey()
-                ?.Properties
-                .Select(x => x.GetColumnName())
-                .FirstOrDefault();
-
-            if (primaryKeyName == null)
-            {
-                throw new InvalidOperationException($"Cannot find Primary Key for Entity Type '{entityType}");
-            }
-
-            return (entityType.Name, schemaQualifiedTableName, primaryKeyName);
-        }
+        public DbSet<Team> Teams { get; set; } = null!;
 
         /// <summary>
-        /// Returns all <typeparamref name="TEntityType"/> for a given <paramref name="userId"/> and <paramref name="relation"/>.
+        /// Gets or sets the UserTasks.
         /// </summary>
-        /// <param name="userId">UserID</param>
-        /// <param name="relation">Relation between the User and UserTask</param>
-        /// <returns>All <typeparamref name="TEntityType"/> the user is related to</returns>
-        public IQueryable<TEntityType> GetEntitiesByUserAndRelation<TEntityType>(int userId, string relation)
-            where TEntityType : class
-        {
-            // Get the Metadata (Entity Name, Fully Qualified Table Name, PrimaryKeyName, ...
-            var entityMetadata = GetEntityMetadata<TEntityType>();
-            
-            // Looks a little bit horrible, but it works, so ...
-            var sql = @$"SELECT {entityMetadata.SchemaQualifiedTableName}.*
-                         FROM [Identity].tvf_RelationTuples_ListObjects('{entityMetadata.EntityName}', '{relation}', 'User', {userId}) as ""user_objects""
-			                INNER JOIN {entityMetadata.SchemaQualifiedTableName} ON {entityMetadata.SchemaQualifiedTableName}.{entityMetadata.PrimaryKeyName} = ""user_objects"".ObjectKey";
+        public DbSet<Organization> Organizations { get; set; } = null!;
 
-            return Set<TEntityType>()
-                .FromSqlRaw(sql)
-                .AsNoTracking(); // Should we really use NoTracking here?
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -210,13 +159,13 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
                     .IsRequired(true);
             });
 
-            modelBuilder.Entity<Organization>(entity =>
+            modelBuilder.Entity<Team>(entity =>
             {
                 entity.ToTable("Team", "Application");
 
-                entity.HasKey(e => e.OrganizationId);
+                entity.HasKey(e => e.TeamId);
 
-                entity.Property(x => x.OrganizationId)
+                entity.Property(x => x.TeamId)
                     .HasColumnType("INT")
                     .HasColumnName("TeamID")
                     .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Team]")

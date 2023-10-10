@@ -1,5 +1,6 @@
 using EfCoreAudit.Tests;
 using RbacExperiments.Server.Api.Infrastructure.Constants;
+using RbacExperiments.Server.Api.Infrastructure.Database;
 using RbacExperiments.Server.Api.Models;
 using System.Linq;
 
