@@ -1,0 +1,4 @@
+﻿CREATE SEQUENCE [Identity].[sq_UserClaim]
+    AS INT
+    START WITH 38187
+    INCREMENT BY 1;
