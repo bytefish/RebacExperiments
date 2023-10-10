@@ -4,7 +4,7 @@
     [ObjectNamespace]       NVARCHAR(50)                                NOT NULL,
     [ObjectRelation]        NVARCHAR(50)                                NOT NULL,
     [SubjectKey]            INT                                         NOT NULL,
-    [SubjectNamespace]      NVARCHAR(50)                                NULL,
+    [SubjectNamespace]      NVARCHAR(50)                                NOT NULL,
     [SubjectRelation]       NVARCHAR(50)                                NULL,
     [RowVersion]            ROWVERSION                                  NULL,
     [LastEditedBy]          INT                                         NOT NULL,

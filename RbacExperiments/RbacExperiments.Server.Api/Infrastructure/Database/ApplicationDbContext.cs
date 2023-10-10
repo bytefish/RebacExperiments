@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using Microsoft.VisualBasic;
 using RbacExperiments.Server.Api.Models;
 
 namespace RbacExperiments.Server.Api.Infrastructure.Database
@@ -32,9 +34,32 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
         /// </summary>
         public DbSet<Organization> Organizations { get; set; } = null!;
 
+        /// <summary>
+        /// Gets or sets the UserTasks.
+        /// </summary>
+        public DbSet<RelationTuple> RelationTuples { get; set; } = null!;
+
+        /// <summary>
+        /// List Objects.
+        /// </summary>
+        /// <param name="objectNamespace"></param>
+        /// <param name="objectRelation"></param>
+        /// <param name="subjectNamespace"></param>
+        /// <param name="subjectKey"></param>
+        /// <returns></returns>
+        public IQueryable<RelationTuple> ListObjects(string objectNamespace, string objectRelation, string subjectNamespace, int subjectKey)
+            => FromExpression(() => ListObjects(objectNamespace, objectRelation, subjectNamespace, subjectKey));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Add ListObjects Function:
+            modelBuilder
+                .HasDbFunction(
+                    methodInfo: typeof(ApplicationDbContext).GetMethod(nameof(ListObjects), new[] { typeof(string), typeof(string), typeof(string), typeof(int) })!,
+                    builderAction: builder => builder
+                        .HasSchema("Identity")
+                        .HasName("tvf_RelationTuples_ListObjects"));
+
             modelBuilder.HasSequence<int>("sq_UserTask", schema: "Application")
                 .StartsAt(38187)
                 .IncrementsBy(1);
@@ -200,6 +225,71 @@ namespace RbacExperiments.Server.Api.Infrastructure.Database
                     .HasColumnName("LastEditedBy")
                     .IsRequired(true);
             });
+            
+            modelBuilder.Entity<RelationTuple>(entity =>
+            {
+                entity.ToTable("RelationTuple", "Identity");
+
+                entity.HasKey(e => e.RelationTupleId);
+
+                entity.Property(x => x.RelationTupleId)
+                    .HasColumnType("INT")
+                    .HasColumnName("RelationTupleID")
+                    .HasDefaultValueSql("NEXT VALUE FOR [Identity].[sq_RelationTuple]")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.ObjectKey)
+                    .HasColumnType("INT")
+                    .HasColumnName("ObjectKey")
+                    .IsRequired(true);
+
+                entity.Property(e => e.ObjectNamespace)
+                    .HasColumnType("NVARCHAR(50)")
+                    .HasColumnName("ObjectNamespace")
+                    .IsRequired(true)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ObjectRelation)
+                    .HasColumnType("NVARCHAR(50)")
+                    .HasColumnName("ObjectRelation")
+                    .IsRequired(true)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.SubjectKey)
+                    .HasColumnType("INT")
+                    .HasColumnName("SubjectKey")
+                    .IsRequired(true);
+
+                entity.Property(e => e.SubjectNamespace)
+                    .HasColumnType("NVARCHAR(50)")
+                    .HasColumnName("SubjectNamespace")
+                    .IsRequired(true)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.SubjectRelation)
+                    .HasColumnType("NVARCHAR(50)")
+                    .HasColumnName("SubjectRelation")
+                    .IsRequired(false)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ValidFrom)
+                    .HasColumnType("DATETIME2(7)")
+                    .HasColumnName("ValidFrom")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.ValidTo)
+                    .HasColumnType("DATETIME2(7)")
+                    .HasColumnName("ValidTo")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.LastEditedBy)
+                    .HasColumnType("INT")
+                    .HasColumnName("LastEditedBy")
+                    .IsRequired(true);
+            });
+
 
             base.OnModelCreating(modelBuilder);
         }
