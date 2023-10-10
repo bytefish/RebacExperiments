@@ -11,8 +11,8 @@ namespace RbacExperiments.Server.Api.Tests
         [Test]
         public void TestUserObjects()
         {
-            var query1 = _applicationDbContext.GetEntitiesByUserAndRelation<UserTask>(3, Relations.Viewer);
-            var query2 = _applicationDbContext.GetEntitiesByUserAndRelation<UserTask>(3, Relations.Owner);
+            var query1 = _applicationDbContext.ListUserObjects<UserTask>(3, Relations.Viewer);
+            var query2 = _applicationDbContext.ListUserObjects<UserTask>(3, Relations.Owner);
 
             var result = query1.Union(query2).ToList();
         }
@@ -20,7 +20,7 @@ namespace RbacExperiments.Server.Api.Tests
         [Test]
         public void GetOrganizationObjects()
         {
-            var query1 = _applicationDbContext.GetEntitiesByUserAndRelation<Organization>(2, Relations.Member);
+            var query1 = _applicationDbContext.ListUserObjects<Organization>(2, Relations.Member);
 
             var result = query1.ToList();
         }
