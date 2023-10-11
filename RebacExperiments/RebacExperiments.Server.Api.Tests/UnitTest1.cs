@@ -1,4 +1,7 @@
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
 using RebacExperiments.Server.Api.Models;

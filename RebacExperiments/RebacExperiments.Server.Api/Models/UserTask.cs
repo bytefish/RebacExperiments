@@ -1,15 +1,12 @@
-﻿namespace RebacExperiments.Server.Api.Models
+﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace RebacExperiments.Server.Api.Models
 {
     /// <summary>
     /// A User Task.
     /// </summary>
-    public class UserTask
+    public class UserTask : Entity
     {
-        /// <summary>
-        /// Gets or sets the
-        /// </summary>
-        public int UserTaskId { get; set; }
-
         /// <summary>
         /// Gets or sets the Title.
         /// </summary>
@@ -49,25 +46,5 @@
         /// Gets or sets the user the task status.
         /// </summary>
         public UserTaskStatusEnum UserTaskStatus { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user the task row version.
-        /// </summary>
-        public byte[]? RowVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user, that made the latest modifications.
-        /// </summary>
-        public int LastEditedBy { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Start Date for the row.
-        /// </summary>
-        public DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// Gets or sets the End Date for the row.
-        /// </summary>
-        public DateTime? ValidTo { get; set; }
     }
 }

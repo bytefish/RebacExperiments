@@ -1,4 +1,6 @@
-﻿namespace RebacExperiments.Server.Api.Models
+﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace RebacExperiments.Server.Api.Models
 {
     /// <summary>
     /// An Enumeration of Priorities for Tasks.

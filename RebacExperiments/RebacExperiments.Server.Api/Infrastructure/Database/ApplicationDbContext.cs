@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Microsoft.VisualBasic;
+﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.EntityFrameworkCore;
 using RebacExperiments.Server.Api.Models;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Database
@@ -52,7 +52,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Add ListObjects Function:
+            // Add ListObjects Function, so we can use it in LINQ:
             modelBuilder
                 .HasDbFunction(
                     methodInfo: typeof(ApplicationDbContext).GetMethod(nameof(ListObjects), new[] { typeof(string), typeof(string), typeof(string), typeof(int) })!,
@@ -60,6 +60,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                         .HasSchema("Identity")
                         .HasName("tvf_RelationTuples_ListObjects"));
 
+            // Now create the Tables
             modelBuilder.HasSequence<int>("sq_UserTask", schema: "Application")
                 .StartsAt(38187)
                 .IncrementsBy(1);
@@ -68,9 +69,9 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             {
                 entity.ToTable("UserTask", "Application");
 
-                entity.HasKey(e => e.UserTaskId);
+                entity.HasKey(e => e.Id);
 
-                entity.Property(x => x.UserTaskId)
+                entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("UserTaskID")
                     .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_UserTask]")
@@ -146,9 +147,9 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             {
                 entity.ToTable("Organization", "Application");
 
-                entity.HasKey(e => e.OrganizationId);
+                entity.HasKey(e => e.Id);
 
-                entity.Property(x => x.OrganizationId)
+                entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("OrganizationID")
                     .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Organization]")
@@ -192,9 +193,9 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             {
                 entity.ToTable("Team", "Application");
 
-                entity.HasKey(e => e.TeamId);
+                entity.HasKey(e => e.Id);
 
-                entity.Property(x => x.TeamId)
+                entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("TeamID")
                     .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Team]")
@@ -306,9 +307,9 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             {
                 entity.ToTable("User", "Identity");
 
-                entity.HasKey(e => e.UserId);
+                entity.HasKey(e => e.Id);
 
-                entity.Property(x => x.UserId)
+                entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("UserID")
                     .HasDefaultValueSql("NEXT VALUE FOR [Identity].[sq_User]")
