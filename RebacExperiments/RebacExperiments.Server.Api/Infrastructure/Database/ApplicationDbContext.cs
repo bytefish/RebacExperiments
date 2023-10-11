@@ -121,6 +121,13 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                     .HasConversion(v => (int)v, v => (UserTaskPriorityEnum)v)
                     .IsRequired(true);
 
+                entity.Property(e => e.RowVersion)
+                    .HasColumnType("ROWVERSION")
+                    .HasColumnName("RowVersion")
+                    .IsConcurrencyToken()
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
                 entity.Property(e => e.ValidFrom)
                     .HasColumnType("DATETIME2(7)")
                     .HasColumnName("ValidFrom")
@@ -166,6 +173,13 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                     .HasColumnName("Description")
                     .IsRequired(true)
                     .HasMaxLength(2000);
+
+                entity.Property(e => e.RowVersion)
+                    .HasColumnType("ROWVERSION")
+                    .HasColumnName("RowVersion")
+                    .IsConcurrencyToken()
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
 
                 entity.Property(e => e.ValidFrom)
                     .HasColumnType("DATETIME2(7)")
@@ -213,6 +227,13 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                     .IsRequired(true)
                     .HasMaxLength(2000);
 
+                entity.Property(e => e.RowVersion)
+                    .HasColumnType("ROWVERSION")
+                    .HasColumnName("RowVersion")
+                    .IsConcurrencyToken()
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
                 entity.Property(e => e.ValidFrom)
                     .HasColumnType("DATETIME2(7)")
                     .HasColumnName("ValidFrom")
@@ -239,9 +260,9 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             {
                 entity.ToTable("RelationTuple", "Identity");
 
-                entity.HasKey(e => e.RelationTupleId);
+                entity.HasKey(e => e.Id);
 
-                entity.Property(x => x.RelationTupleId)
+                entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("RelationTupleID")
                     .HasDefaultValueSql("NEXT VALUE FOR [Identity].[sq_RelationTuple]")
@@ -280,6 +301,13 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                     .HasColumnName("SubjectRelation")
                     .IsRequired(false)
                     .HasMaxLength(50);
+
+                entity.Property(e => e.RowVersion)
+                    .HasColumnType("ROWVERSION")
+                    .HasColumnName("RowVersion")
+                    .IsConcurrencyToken()
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
 
                 entity.Property(e => e.ValidFrom)
                     .HasColumnType("DATETIME2(7)")
@@ -343,6 +371,13 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                     .HasColumnType("NVARCHAR(MAX)")
                     .HasColumnName("HashedPassword")
                     .IsRequired(false);
+
+                entity.Property(e => e.RowVersion)
+                    .HasColumnType("ROWVERSION")
+                    .HasColumnName("RowVersion")
+                    .IsRequired(false)
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate();
 
                 entity.Property(e => e.ValidFrom)
                     .HasColumnType("DATETIME2(7)")

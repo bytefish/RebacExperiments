@@ -7,7 +7,12 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "RebacExperiments.Server.SSD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RebacExperiments.Server.Api", "RebacExperiments.Server.Api\RebacExperiments.Server.Api.csproj", "{63101CF1-CEBC-4411-9C79-7EF5ABF2C989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RebacExperiments.Server.Api.Tests", "RebacExperiments.Server.Api.Tests\RebacExperiments.Server.Api.Tests.csproj", "{2DF5B8D3-4E11-4D09-80C0-A83F908951D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RebacExperiments.Server.Api.Tests", "RebacExperiments.Server.Api.Tests\RebacExperiments.Server.Api.Tests.csproj", "{2DF5B8D3-4E11-4D09-80C0-A83F908951D2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31208B26-D595-4E56-9281-91002D1CF01C}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

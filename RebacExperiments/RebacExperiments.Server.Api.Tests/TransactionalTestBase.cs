@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using RebacExperiments.Server.Api.Infrastructure.Database;
 using System;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace RebacExperiments.Server.Api.Tests
@@ -53,7 +54,7 @@ namespace RebacExperiments.Server.Api.Tests
         protected async Task Setup()
         {
             await OnSetupBeforeTransaction();
-            await _applicationDbContext.Database.BeginTransactionAsync(default);
+            await _applicationDbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted, default);
             await OnSetupInTransaction();
         }
 
