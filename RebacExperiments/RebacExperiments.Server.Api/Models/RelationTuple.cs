@@ -29,7 +29,6 @@ namespace RebacExperiments.Server.Api.Models
         /// </summary>
         public required int SubjectKey { get; set; }
 
-
         /// <summary>
         /// Gets or sets the SubjectNamespace.
         /// </summary>
@@ -54,7 +53,6 @@ namespace RebacExperiments.Server.Api.Models
         /// Gets or sets the ValidFrom.
         /// </summary>
         public DateTime? ValidFrom { get; set; }
-
 
         /// <summary>
         /// Gets or sets the ValidTo.

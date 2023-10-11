@@ -50,7 +50,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         /// <param name="subjectRelation">Relation to the Subject</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns></returns>
-        public static async Task CreateRelationshipAsync<TObjectType, TSubjectType>(this ApplicationDbContext context, TObjectType @object, string relation, TSubjectType subject, string? subjectRelation = null, CancellationToken cancellationToken = default)
+        public static async Task AddRelationshipAsync<TObjectType, TSubjectType>(this ApplicationDbContext context, TObjectType @object, string relation, TSubjectType subject, string? subjectRelation = null, CancellationToken cancellationToken = default)
             where TObjectType : Entity
             where TSubjectType : Entity
         {
@@ -61,11 +61,11 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                 ObjectRelation = relation,
                 SubjectNamespace = typeof(TSubjectType).Name,
                 SubjectKey = subject.Id,
-                SubjectRelation = subjectRelation
+                SubjectRelation = subjectRelation,
+                LastEditedBy = 1
             };
 
             await context.Set<RelationTuple>().AddAsync(relationTuple, cancellationToken);
-            await context.SaveChangesAsync(cancellationToken);
         }
     }
 }
