@@ -1,6 +1,5 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RebacExperiments.Server.Api.Infrastructure.Authentication;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
@@ -10,7 +9,6 @@ using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Infrastructure.Services;
 using RebacExperiments.Server.Api.Models;
 using System.Security.Claims;
-
 
 namespace RebacExperiments.Server.Api.Services
 {
