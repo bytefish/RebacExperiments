@@ -12,7 +12,7 @@ DECLARE @ValidTo datetime2(7) =  '99991231 23:59:59.9999999'
 MERGE INTO [Identity].[User] AS [Target]
 USING (VALUES 
      (1, 'Data Conversion Only', 'Data Conversion Only', 0, NULL, NULL, 1, @ValidFrom, @ValidTo)
-    ,(2, 'Philipp Wagner',  'Philipp Wagner',   1, 'philipp@bytefish.de',   'AQAAAAIAAYagAAAAELbMFL9utkwA7FK4QoUCZEK/jPiHhTMzuFllrszW7FuCJBHjLVBCWXJCuFFJyRllYg==', 1, @ValidFrom, @ValidTo)
+    ,(2, 'Philipp Wagner',  'Philipp Wagner',   1, 'philipp@bytefish.de',   'AQAAAAIAAYagAAAAELbMFL9utkwA7FK4QoUCZEK/jPiHhTMzuFllrszW7FuCJBHjLVBCWXJCuFFJyRllYg==', 1, @ValidFrom, @ValidTo) --5!F25GbKwU3P
     ,(3, 'John Doe',        'John Doe',         0, 'john@doe.localhost',    NULL, 1, @ValidFrom, @ValidTo)
     ,(4, 'Max Powers',      'Max Powers',       0, 'max@powers.localhost',  NULL, 1, @ValidFrom, @ValidTo)
     ,(5, 'James Bond',      '007',              0, 'james@bond.localhost',  NULL, 1, @ValidFrom, @ValidTo)

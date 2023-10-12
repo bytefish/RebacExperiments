@@ -416,8 +416,8 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
 
                 entity.Property(x => x.Id)
                     .HasColumnType("INT")
-                    .HasColumnName("TeamID")
-                    .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Team]")
+                    .HasColumnName("RoleID")
+                    .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Role]")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name)

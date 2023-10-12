@@ -40,15 +40,12 @@ namespace RebacExperiments.Server.Api.Controllers
                     _logger.LogError("Authentication failed with ErrorCode = {ErrorCode} and ErrorMessage = {ErrorMessage}", serviceResult.Error.ErrorCode, serviceResult.Error.Message);
                 }
 
-                switch(serviceResult.Error.ErrorCode)
+                return serviceResult.Error.ErrorCode switch
                 {
-                    case ErrorCodes.EntityNotFound:
-                        return NotFound();
-                    case ErrorCodes.EntityUnauthorized:
-                        return Forbid();
-                    default:
-                        return BadRequest();
-                }
+                    ErrorCodes.EntityNotFound => NotFound(),
+                    ErrorCodes.EntityUnauthorized => Forbid(),
+                    _ => BadRequest(),
+                };
             }
 
             return Ok(serviceResult.Data);

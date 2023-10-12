@@ -21,13 +21,15 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         /// <param name="subjectId">SubjectKey</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns><see cref="true"/>, if the <typeparamref name="TSubjectType"/> is authorized; else <see cref="false"/></returns>
-        public static Task<bool> CheckObject<TObjectType, TSubjectType>(this ApplicationDbContext context, int objectId, string relation, int subjectId, CancellationToken cancellationToken)
+        public static async Task<bool> CheckObject<TObjectType, TSubjectType>(this ApplicationDbContext context, int objectId, string relation, int subjectId, CancellationToken cancellationToken)
             where TObjectType : Entity
             where TSubjectType : Entity
         {
-            return context.Database
-                .SqlQuery<bool>($"EXECUTE [Identity].[udf_RelationTuples_Check]({typeof(TObjectType).Name}, {objectId}, {relation}, {typeof(TSubjectType).Name}, {subjectId})")
-                .SingleAsync(cancellationToken);
+            var result = await context.Database
+                .SqlQuery<bool>($"SELECT [Identity].[udf_RelationTuples_Check]({typeof(TObjectType).Name}, {objectId}, {relation}, {typeof(TSubjectType).Name}, {subjectId})")
+                .ToListAsync(cancellationToken);
+
+            return result.First();
         }
 
         /// <summary>
