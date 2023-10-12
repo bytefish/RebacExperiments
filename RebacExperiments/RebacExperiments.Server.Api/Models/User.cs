@@ -1,5 +1,8 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using RebacExperiments.Server.Api.Infrastructure.Services;
+using System.Diagnostics.CodeAnalysis;
+
 namespace RebacExperiments.Server.Api.Models
 {
     public class User : Entity
@@ -17,6 +20,8 @@ namespace RebacExperiments.Server.Api.Models
         /// <summary>
         /// Gets or sets the IsPermittedToLogon.
         /// </summary>
+        [MemberNotNullWhen(returnValue: true, member: nameof(LogonName))]
+        [MemberNotNullWhen(returnValue: true, member: nameof(HashedPassword))]
         public bool IsPermittedToLogon { get; set; }
 
         /// <summary>

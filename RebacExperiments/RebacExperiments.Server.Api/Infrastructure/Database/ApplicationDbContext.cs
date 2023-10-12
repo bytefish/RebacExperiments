@@ -20,6 +20,16 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         }
 
         /// <summary>
+        /// Gets or sets the Users.
+        /// </summary>
+        public DbSet<User> Users { get; set; } = null!;
+        
+        /// <summary>
+        /// Gets or sets the Roles.
+        /// </summary>
+        public DbSet<Role> Roles { get; set; } = null!;
+
+        /// <summary>
         /// Gets or sets the UserTasks.
         /// </summary>
         public DbSet<UserTask> UserTasks { get; set; } = null!;
@@ -377,6 +387,55 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                     .HasColumnName("RowVersion")
                     .IsRequired(false)
                     .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.ValidFrom)
+                    .HasColumnType("DATETIME2(7)")
+                    .HasColumnName("ValidFrom")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.ValidTo)
+                    .HasColumnType("DATETIME2(7)")
+                    .HasColumnName("ValidTo")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.LastEditedBy)
+                    .HasColumnType("INT")
+                    .HasColumnName("LastEditedBy")
+                    .IsRequired(true);
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.ToTable("Role", "Identity");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(x => x.Id)
+                    .HasColumnType("INT")
+                    .HasColumnName("TeamID")
+                    .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Team]")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name)
+                    .HasColumnType("NVARCHAR(255)")
+                    .HasColumnName("Name")
+                    .IsRequired(true)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Description)
+                    .HasColumnType("NVARCHAR(2000)")
+                    .HasColumnName("Description")
+                    .IsRequired(true)
+                    .HasMaxLength(2000);
+
+                entity.Property(e => e.RowVersion)
+                    .HasColumnType("ROWVERSION")
+                    .HasColumnName("RowVersion")
+                    .IsConcurrencyToken()
+                    .IsRequired(false)
                     .ValueGeneratedOnAddOrUpdate();
 
                 entity.Property(e => e.ValidFrom)

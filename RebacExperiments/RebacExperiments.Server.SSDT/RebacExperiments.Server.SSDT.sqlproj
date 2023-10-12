@@ -94,7 +94,7 @@
     <Build Include="Identity\Indexes\UX_RelationTuple_UniqueObjectSubjectRelation.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\Identity\pds-110-ins-identity-relation-tuples.sql" />
+    <None Include="Scripts\Identity\pds-120-ins-identity-relation-tuples.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Identity\Sequences\sq_Entity.sql" />
@@ -107,5 +107,8 @@
     <None Include="Scripts\Application\pds-140-ins-application-team.sql" />
     <Build Include="Identity\Tables\User.sql" />
     <None Include="Scripts\Identity\pds-100-ins-identity-users.sql" />
+    <Build Include="Identity\Tables\Role.sql" />
+    <Build Include="Identity\Sequences\sq_Role.sql" />
+    <None Include="Scripts\Identity\pds-110-ins-identity-roles.sql" />
   </ItemGroup>
 </Project>
