@@ -1,5 +1,8 @@
 ﻿namespace RebacExperiments.Server.Api.Infrastructure.Errors
 {
+    /// <summary>
+    /// Error Codes used in the Application.
+    /// </summary>
     public static class ErrorCodes
     {
         /// <summary>
@@ -13,7 +16,7 @@
         public const int EntityNotFound = 70001;
 
         /// <summary>
-        /// Entity has not been found.
+        /// Access to Entity has been unauthorized.
         /// </summary>
         public const int EntityUnauthorized = 70002;
     }
