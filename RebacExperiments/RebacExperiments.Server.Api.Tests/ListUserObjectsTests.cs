@@ -21,10 +21,10 @@ namespace RebacExperiments.Server.Api.Tests
         /// 
         /// ObjectKey           |  ObjectNamespace  |   ObjectRelation  |   SubjectKey          |   SubjectNamespace    |   SubjectRelation
         /// --------------------|-------------------|-------------------|-----------------------|-----------------------|-------------------
-        /// :team.id:           |   Team            |       member	    |   :user.id:	        |       User            |   NULL
-        /// :organization.id:	|   Organization    |       member	    |   :user.id:	        |       User            |   NULL
-        /// :task.id:	        |   UserTask        |       viewer	    |   :organization.id:	|       Organization    |   member
-        /// :task.id:           |   UserTask        |       owner	    |   :team.id:	        |       Team            |   member
+        /// :team.id:           |   Team            |       member      |   :user.id:           |       User            |   NULL
+        /// :organization.id:   |   Organization    |       member      |   :user.id:           |       User            |   NULL
+        /// :task.id:           |   UserTask        |       viewer      |   :organization.id:   |       Organization    |   member
+        /// :task.id:           |   UserTask        |       owner       |   :team.id:           |       Team            |   member
         /// </summary>
         [Test]
         public async Task ListUserObjects_OneUserTaskAssignedThroughOrganizationAndTeam()
@@ -124,11 +124,11 @@ namespace RebacExperiments.Server.Api.Tests
         /// 
         /// ObjectKey           |  ObjectNamespace  |   ObjectRelation  |   SubjectKey          |   SubjectNamespace    |   SubjectRelation
         /// --------------------|-------------------|-------------------|-----------------------|-----------------------|-------------------
-        /// :team.id:           |   Team            |       member	    |   :user.id:	        |       User            |   NULL
-        /// :organization.id:	|   Organization    |       member	    |   :user.id:	        |       User            |   NULL
-        /// :task1.id:	        |   UserTask        |       viewer	    |   :organization.id:	|       Organization    |   member
-        /// :task2.id:          |   UserTask        |       viewer	    |   :organization.id:	|       Organization    |   member
-        /// :task2.id:          |   UserTask        |       owner	    |   :team.id:	        |       Team            |   member
+        /// :team.id:           |   Team            |       member      |   :user.id:           |       User            |   NULL
+        /// :organization.id:   |   Organization    |       member      |   :user.id:           |       User            |   NULL
+        /// :task1.id:          |   UserTask        |       viewer      |   :organization.id:   |       Organization    |   member
+        /// :task2.id:          |   UserTask        |       viewer      |   :organization.id:   |       Organization    |   member
+        /// :task2.id:          |   UserTask        |       owner       |   :team.id:           |       Team            |   member
         /// </summary>
         [Test]
         public async Task ListUserObjects_TwoUserTasksAssignedToOrganizationAndTeam()
