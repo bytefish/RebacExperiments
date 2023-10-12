@@ -2,6 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using RebacExperiments.Server.Api.Models;
+using System.Reflection.Metadata.Ecma335;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Database
 {
@@ -52,10 +53,10 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         /// <summary>
         /// List Objects.
         /// </summary>
-        /// <param name="objectNamespace"></param>
-        /// <param name="objectRelation"></param>
-        /// <param name="subjectNamespace"></param>
-        /// <param name="subjectKey"></param>
+        /// <param name="objectNamespace">Object Namespace</param>
+        /// <param name="objectRelation">Object Relation</param>
+        /// <param name="subjectNamespace">Subject Namespace</param>
+        /// <param name="subjectKey">Subject Key</param>
         /// <returns></returns>
         public IQueryable<RelationTuple> ListObjects(string objectNamespace, string objectRelation, string subjectNamespace, int subjectKey)
             => FromExpression(() => ListObjects(objectNamespace, objectRelation, subjectNamespace, subjectKey));

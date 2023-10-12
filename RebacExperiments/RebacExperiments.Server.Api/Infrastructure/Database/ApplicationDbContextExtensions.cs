@@ -1,5 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.EntityFrameworkCore;
 using RebacExperiments.Server.Api.Models;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Database
@@ -9,6 +10,56 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
     /// </summary>
     public static class ApplicationDbContextExtensions
     {
+        /// <summary>
+        /// Checks if a <typeparamref name="TSubjectType"/> is authorized to access an <typeparamref name="TObjectType"/>. 
+        /// </summary>
+        /// <typeparam name="TObjectType">Object Type</typeparam>
+        /// <typeparam name="TSubjectType">Subject Type</typeparam>
+        /// <param name="context">DbContext</param>
+        /// <param name="objectId">Object Key</param>
+        /// <param name="relation">Relation</param>
+        /// <param name="subjectId">SubjectKey</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns><see cref="true"/>, if the <typeparamref name="TSubjectType"/> is authorized; else <see cref="false"/></returns>
+        public static Task<bool> CheckObject<TObjectType, TSubjectType>(this ApplicationDbContext context, int objectId, string relation, int subjectId, CancellationToken cancellationToken)
+            where TObjectType : Entity
+            where TSubjectType : Entity
+        {
+            return context.Database
+                .SqlQuery<bool>($"EXECUTE [Identity].[udf_RelationTuples_Check]({typeof(TObjectType).Name}, {objectId}, {relation}, {typeof(TSubjectType).Name}, {subjectId})")
+                .SingleAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Checks if a <see cref="User"/> is authorized to access an <typeparamref name="TObjectType"/>. 
+        /// </summary>
+        /// <typeparam name="TObjectType">Object Type</typeparam>
+        /// <param name="context">DbContext</param>
+        /// <param name="objectId">Object Key</param>
+        /// <param name="relation">Relation</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns><see cref="true"/>, if the <typeparamref name="TSubjectType"/> is authorized; else <see cref="false"/></returns>
+        public static Task<bool> CheckUserObject<TObjectType>(this ApplicationDbContext context, int userId, int objectId, string relation, CancellationToken cancellationToken)
+            where TObjectType : Entity
+        {
+            return CheckObject<TObjectType, User>(context, objectId, relation, userId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Checks if a <see cref="User"/> is authorized to access an <typeparamref name="TObjectType"/>. 
+        /// </summary>
+        /// <typeparam name="TObjectType">Object Type</typeparam>
+        /// <param name="context">DbContext</param>
+        /// <param name="objectId">Object Key</param>
+        /// <param name="relation">Relation</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns><see cref="true"/>, if the <typeparamref name="TSubjectType"/> is authorized; else <see cref="false"/></returns>
+        public static Task<bool> CheckUserObject<TObjectType>(this ApplicationDbContext context, int userId, TObjectType @object, string relation, CancellationToken cancellationToken)
+            where TObjectType : Entity
+        {
+            return CheckObject<TObjectType, User>(context, @object.Id, relation, userId, cancellationToken);
+        }
+
         /// <summary>
         /// Returns all <typeparamref name="TObjectType"/> for a given <typeparamref name="TSubjectType"/> and <paramref name="relation"/>.
         /// </summary>

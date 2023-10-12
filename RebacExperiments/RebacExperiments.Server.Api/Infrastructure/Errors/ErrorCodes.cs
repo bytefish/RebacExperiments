@@ -5,7 +5,16 @@
         /// <summary>
         /// General Authentication Error.
         /// </summary>
-        public static readonly int AuthenticationFailed = 70000;
+        public const int AuthenticationFailed = 70000;
 
+        /// <summary>
+        /// Entity has not been found.
+        /// </summary>
+        public const int EntityNotFound = 70001;
+
+        /// <summary>
+        /// Entity has not been found.
+        /// </summary>
+        public const int EntityUnauthorized = 70002;
     }
 }
