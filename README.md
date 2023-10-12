@@ -1,6 +1,6 @@
 # Experimenting with Relationship-based Access Control #
 
-I have recently read about a paper on Google Zanzibar, which is Google's 
+I have recently read a paper on Google Zanzibar, which is Google's 
 solution for providing authorization among its many services:
 
 * [https://research.google/pubs/pub48190/](https://research.google/pubs/pub48190/)
