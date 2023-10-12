@@ -49,7 +49,7 @@ namespace RebacExperiments.Server.Api.Controllers
                 return Forbid();
             }
 
-            // Get the Data
+            // Get the Data from the Service Result
             var userClaims = serviceResult.Data;
 
             // Create the ClaimsPrincipal
