@@ -3,17 +3,18 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using RebacExperiments.Server.Api.Infrastructure.Authentication;
+using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
 using RebacExperiments.Server.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IUserTaskService, UserTaskService>();
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
-// Database:
+// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabase");
@@ -32,6 +33,9 @@ builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax; // We don't want to deal with CSRF Tokens
+        
         options.Events.OnRedirectToAccessDenied = (context) =>
         {
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
@@ -47,16 +51,19 @@ builder.Services
         };
     });
 
-
-
 builder.Services.AddControllers();
-
 builder.Services.AddSwaggerGen();
+
+// Add Policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.RequireUserRole, policy => policy.RequireRole(Roles.User));
+    options.AddPolicy(Policies.RequireAdminRole, policy => policy.RequireRole(Roles.Administrator));
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
 
 app.UseSwagger();

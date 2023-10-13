@@ -18,6 +18,8 @@ USING (VALUES
      ,(5, 'Organization',  1,   'member', 'User',  2, NULL, 1, @ValidFrom, @ValidTo)
      ,(6, 'Organization',  1,   'member', 'User',  3, NULL, 1, @ValidFrom, @ValidTo)
      ,(7, 'Organization',  2,   'member', 'User',  4, NULL, 1, @ValidFrom, @ValidTo)
+     ,(8, 'Role',          1,   'member', 'User',  2, NULL, 1, @ValidFrom, @ValidTo)
+     ,(9, 'Role',          2,   'member', 'User',  2, NULL, 1, @ValidFrom, @ValidTo)
 ) AS [Source]
 (
      [RelationTupleID] 

@@ -1,7 +1,10 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using RebacExperiments.Server.Api.Infrastructure.Authentication;
+using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
 using RebacExperiments.Server.Api.Infrastructure.Errors;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
@@ -9,6 +12,7 @@ using RebacExperiments.Server.Api.Services;
 
 namespace RebacExperiments.Server.Api.Controllers
 {
+    [Authorize(Policy = Policies.RequireUserRole)]
     public class UserTasksController : ControllerBase
     {
         private readonly ILogger<UserTasksController> _logger;
@@ -49,6 +53,6 @@ namespace RebacExperiments.Server.Api.Controllers
             }
 
             return Ok(serviceResult.Data);
-        }
+        }   
     }
 }
