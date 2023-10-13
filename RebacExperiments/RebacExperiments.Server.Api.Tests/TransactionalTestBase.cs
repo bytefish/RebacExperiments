@@ -2,6 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 using RebacExperiments.Server.Api.Infrastructure.Database;
 using System;
@@ -136,7 +137,9 @@ namespace RebacExperiments.Server.Api.Tests
         {
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlServer(connectionString);
 
-            return new ApplicationDbContext(dbContextOptionsBuilder.Options);
+            return new ApplicationDbContext(
+                logger: new NullLogger<ApplicationDbContext>(), 
+                options: dbContextOptionsBuilder.Options);
         }
     }
 }

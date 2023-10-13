@@ -1,8 +1,8 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore;
+using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Models;
-using System.Reflection.Metadata.Ecma335;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Database
 {
@@ -12,12 +12,18 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
     public class ApplicationDbContext : DbContext
     {
         /// <summary>
+        /// Logger.
+        /// </summary>
+        public ILogger<ApplicationDbContext> Logger { get; }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="options">Options to configure the base <see cref="DbContext"/></param>
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(ILogger<ApplicationDbContext> logger, DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            Logger = logger;
         }
 
         /// <summary>

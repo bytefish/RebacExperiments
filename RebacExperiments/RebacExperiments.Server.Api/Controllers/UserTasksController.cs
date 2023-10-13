@@ -33,7 +33,7 @@ namespace RebacExperiments.Server.Api.Controllers
                 return BadRequest();
             }
 
-            // Create ClaimsPrincipal from Database 
+            // Get the UserTask from the Database
             var serviceResult = await userTaskService.GetUserTaskByIdAsync(context, userTaskId, User.GetUserId(), cancellationToken);
 
             // If it's not a valid user return 
@@ -53,6 +53,6 @@ namespace RebacExperiments.Server.Api.Controllers
             }
 
             return Ok(serviceResult.Data);
-        }   
+        }
     }
 }

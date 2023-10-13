@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore;
+using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Models;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Database
@@ -25,6 +26,8 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             where TObjectType : Entity
             where TSubjectType : Entity
         {
+            context.Logger.TraceMethodEntry();
+
             var result = await context.Database
                 .SqlQuery<bool>($"SELECT [Identity].[udf_RelationTuples_Check]({typeof(TObjectType).Name}, {objectId}, {relation}, {typeof(TSubjectType).Name}, {subjectId})")
                 .ToListAsync(cancellationToken);
@@ -44,6 +47,8 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         public static Task<bool> CheckUserObject<TObjectType>(this ApplicationDbContext context, int userId, int objectId, string relation, CancellationToken cancellationToken)
             where TObjectType : Entity
         {
+            context.Logger.TraceMethodEntry();
+
             return CheckObject<TObjectType, User>(context, objectId, relation, userId, cancellationToken);
         }
 
@@ -59,6 +64,8 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         public static Task<bool> CheckUserObject<TObjectType>(this ApplicationDbContext context, int userId, TObjectType @object, string relation, CancellationToken cancellationToken)
             where TObjectType : Entity
         {
+            context.Logger.TraceMethodEntry();
+
             return CheckObject<TObjectType, User>(context, @object.Id, relation, userId, cancellationToken);
         }
 
@@ -72,6 +79,8 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             where TObjectType : Entity
             where TSubjectType : Entity
         {
+            context.Logger.TraceMethodEntry();
+
             return
                 from entity in context.Set<TObjectType>()
                 join objects in context.ListObjects(typeof(TObjectType).Name, relation, typeof(TSubjectType).Name, subjectId)
@@ -88,6 +97,8 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         public static IQueryable<TEntityType> ListUserObjects<TEntityType>(this ApplicationDbContext context, int userId, string relation)
             where TEntityType : Entity
         {
+            context.Logger.TraceMethodEntry();
+
             return context.ListObjects<TEntityType, User>(userId, relation);
         }
 
@@ -107,6 +118,8 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             where TObjectType : Entity
             where TSubjectType : Entity
         {
+            context.Logger.TraceMethodEntry();
+
             var relationTuple = new RelationTuple
             {
                 ObjectNamespace = typeof(TObjectType).Name,
