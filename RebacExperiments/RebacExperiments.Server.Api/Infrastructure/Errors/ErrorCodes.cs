@@ -19,5 +19,10 @@
         /// Access to Entity has been unauthorized.
         /// </summary>
         public const string EntityUnauthorized = "Entity:000002";
+
+        /// <summary>
+        /// Entity has been modified concurrently.
+        /// </summary>
+        public const string EntityConcurrencyFailure = "Entity:000003";
     }
 }

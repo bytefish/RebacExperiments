@@ -7,12 +7,12 @@ namespace RebacExperiments.Server.Api.Infrastructure.Exceptions
         /// <summary>
         /// Gets or sets an error code.
         /// </summary>
-        public override string ErrorCode => ErrorCodes.EntityNotFound;
+        public override string ErrorCode => ErrorCodes.EntityConcurrencyFailure;
 
         /// <summary>
         /// Gets or sets an error code.
         /// </summary>
-        public override string ErrorMessage => $"EntityNotFound (Entity = {EntityName}, EntityID = {EntityId})";
+        public override string ErrorMessage => $"EntityConcurrencyFailure (Entity = {EntityName}, EntityID = {EntityId})";
 
         /// <summary>
         /// Gets or sets the Entity Name.
