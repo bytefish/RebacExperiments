@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using RebacExperiments.Server.Api.Infrastructure.Authentication;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
-using RebacExperiments.Server.Api.Infrastructure.Errors;
+using RebacExperiments.Server.Api.Infrastructure.Exceptions;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
-using RebacExperiments.Server.Api.Infrastructure.Services;
 using RebacExperiments.Server.Api.Models;
 using System.Security.Claims;
 
@@ -23,7 +22,7 @@ namespace RebacExperiments.Server.Api.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<ServiceResult<List<Claim>>> GetClaimsAsync(ApplicationDbContext context, string username, string password, CancellationToken cancellationToken)
+        public async Task<List<Claim>> GetClaimsAsync(ApplicationDbContext context, string username, string password, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
 
@@ -33,24 +32,12 @@ namespace RebacExperiments.Server.Api.Services
 
             if(user == null)
             {
-                var serviceError = new ServiceError
-                {
-                    ErrorCode = ErrorCodes.AuthenticationFailed,
-                    Message = $"Failed to read user details for user '{username}'"
-                };
-
-                return ServiceResult.Failed<List<Claim>>(serviceError);
+                throw new AuthenticationFailedException();
             }
 
             if (!user.IsPermittedToLogon)
             {
-                var serviceError = new ServiceError
-                {
-                    ErrorCode = ErrorCodes.AuthenticationFailed,
-                    Message = $"User '{username}' is not permitted to login",
-                };
-
-                return ServiceResult.Failed<List<Claim>>(serviceError);
+                throw new AuthenticationFailedException();
             }
 
             // Verify hashed password in database against the provided password
@@ -58,13 +45,7 @@ namespace RebacExperiments.Server.Api.Services
 
             if (!isVerifiedPassword)
             {
-                var serviceError = new ServiceError
-                {
-                    ErrorCode = ErrorCodes.AuthenticationFailed,
-                    Message = $"Password mismatch for '{username}'"
-                };
-
-                return ServiceResult.Failed<List<Claim>>(serviceError);
+                throw new AuthenticationFailedException();
             }
 
             // Load the Roles from the List of Objects
@@ -76,7 +57,7 @@ namespace RebacExperiments.Server.Api.Services
             // Build the Claims for the ClaimsPrincipal
             var claims = CreateClaims(user, roles);
 
-            return ServiceResult.Success(claims);
+            return claims;
         }
 
         private List<Claim> CreateClaims(User user, List<Role> roles)

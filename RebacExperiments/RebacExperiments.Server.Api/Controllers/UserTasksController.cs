@@ -1,12 +1,11 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using RebacExperiments.Server.Api.Infrastructure.Authentication;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
-using RebacExperiments.Server.Api.Infrastructure.Errors;
+using RebacExperiments.Server.Api.Infrastructure.Exceptions;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Services;
 
@@ -33,26 +32,23 @@ namespace RebacExperiments.Server.Api.Controllers
                 return BadRequest();
             }
 
-            // Get the UserTask from the Database
-            var serviceResult = await userTaskService.GetUserTaskByIdAsync(context, userTaskId, User.GetUserId(), cancellationToken);
-
-            // If it's not a valid user return 
-            if (!serviceResult.Succeeded)
+            try
             {
-                if(_logger.IsErrorEnabled())
-                {
-                    _logger.LogError("Authentication failed with ErrorCode = {ErrorCode} and ErrorMessage = {ErrorMessage}", serviceResult.Error.ErrorCode, serviceResult.Error.Message);
-                }
+                var userTask = await userTaskService.GetUserTaskByIdAsync(context, userTaskId, User.GetUserId(), cancellationToken);
 
-                return serviceResult.Error.ErrorCode switch
+                return Ok(userTask);
+            } 
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
+
+                return ex switch
                 {
-                    ErrorCodes.EntityNotFound => NotFound(),
-                    ErrorCodes.EntityUnauthorized => Forbid(),
-                    _ => BadRequest(),
+                    EntityNotFoundException _ => NotFound(),
+                    EntityUnauthorizedAccessException _ => Forbid(),
+                    _ => StatusCode(500, "An Internal Server Error occured"),
                 };
             }
-
-            return Ok(serviceResult.Data);
         }
     }
 }

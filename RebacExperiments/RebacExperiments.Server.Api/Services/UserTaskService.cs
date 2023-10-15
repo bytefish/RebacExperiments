@@ -3,9 +3,8 @@
 using Microsoft.EntityFrameworkCore;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
-using RebacExperiments.Server.Api.Infrastructure.Errors;
+using RebacExperiments.Server.Api.Infrastructure.Exceptions;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
-using RebacExperiments.Server.Api.Infrastructure.Services;
 using RebacExperiments.Server.Api.Models;
 
 namespace RebacExperiments.Server.Api.Services
@@ -19,7 +18,7 @@ namespace RebacExperiments.Server.Api.Services
             _logger = logger;
         }
 
-        public async Task<ServiceResult<UserTask>> GetUserTaskByIdAsync(ApplicationDbContext context, int userTaskId, int currentUserId, CancellationToken cancellationToken)
+        public async Task<UserTask> GetUserTaskByIdAsync(ApplicationDbContext context, int userTaskId, int currentUserId, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
 
@@ -29,29 +28,66 @@ namespace RebacExperiments.Server.Api.Services
 
             if(userTask == null)
             {
-                var serviceError = new ServiceError
+                throw new EntityNotFoundException() 
                 {
-                    ErrorCode = ErrorCodes.EntityNotFound,
-                    Message = $"No UserTask found for '{userTaskId}'"
+                    EntityName = nameof(UserTask),
+                    EntityId = userTaskId,
                 };
-
-                return ServiceResult.Failed<UserTask>(serviceError);
             }
 
             bool isAuthorized = await context.CheckUserObject(currentUserId, userTask, Relations.Viewer, cancellationToken);
 
             if(!isAuthorized)
             {
-                var serviceError = new ServiceError
+                throw new EntityUnauthorizedAccessException()
                 {
-                    ErrorCode = ErrorCodes.EntityUnauthorized,
-                    Message = $"Unauthorized to access UserTask '{userTaskId}' with Relation '{Relations.Viewer}'"
+                    EntityName = nameof(UserTask),
+                    EntityId = userTaskId,
+                    UserId = currentUserId,
                 };
-
-                return ServiceResult.Failed<UserTask>(serviceError);
             }
 
-            return ServiceResult.Success(userTask);
+            return userTask;
+        }
+
+        public async Task<UserTask> UpdateUserTaskAsync(ApplicationDbContext context, UserTask userTask, int currentUserId, CancellationToken cancellationToken)
+        {
+            _logger.TraceMethodEntry();
+
+            bool isAuthorized = await context.CheckUserObject(currentUserId, userTask, Relations.Owner, cancellationToken);
+
+            if (!isAuthorized)
+            {
+                throw new EntityUnauthorizedAccessException()
+                {
+                    EntityName = nameof(UserTask),
+                    EntityId = userTask.Id,
+                    UserId = currentUserId,
+                };
+            }
+
+            int rowsAffected = await context.UserTasks
+                .Where(t => t.Id == userTask.Id && t.RowVersion == userTask.RowVersion)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(x => x.Title, userTask.Title)
+                    .SetProperty(x => x.Description, userTask.Description)
+                    .SetProperty(x => x.DueDateTime, userTask.DueDateTime)
+                    .SetProperty(x => x.CompletedDateTime, userTask.CompletedDateTime)
+                    .SetProperty(x => x.ReminderDateTime, userTask.ReminderDateTime)
+                    .SetProperty(x => x.AssignedTo, userTask.AssignedTo)
+                    .SetProperty(x => x.UserTaskPriority, userTask.UserTaskPriority)
+                    .SetProperty(x => x.UserTaskStatus, userTask.UserTaskStatus), cancellationToken);
+
+            if(rowsAffected == 0)
+            {
+                throw new EntityConcurrencyException()
+                {
+                    EntityName = nameof(UserTask),
+                    EntityId = userTask.Id,
+                };
+            }
+
+            return userTask;
         }
     }
 }

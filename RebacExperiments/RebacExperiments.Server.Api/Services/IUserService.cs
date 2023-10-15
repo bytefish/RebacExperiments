@@ -1,7 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using RebacExperiments.Server.Api.Infrastructure.Database;
-using RebacExperiments.Server.Api.Infrastructure.Services;
 using System.Security.Claims;
 
 namespace RebacExperiments.Server.Api.Services
@@ -19,6 +18,6 @@ namespace RebacExperiments.Server.Api.Services
         /// <param name="password">Password</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>A <see cref="ServiceResult"/> with the associated claims, if successful</returns>
-        Task<ServiceResult<List<Claim>>> GetClaimsAsync(ApplicationDbContext context, string username, string password, CancellationToken cancellationToken);
+        Task<List<Claim>> GetClaimsAsync(ApplicationDbContext context, string username, string password, CancellationToken cancellationToken);
     }
 }

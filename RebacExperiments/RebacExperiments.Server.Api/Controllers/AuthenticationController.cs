@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using RebacExperiments.Server.Api.Dto;
 using RebacExperiments.Server.Api.Infrastructure.Database;
+using RebacExperiments.Server.Api.Infrastructure.Exceptions;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Services;
 using System.Security.Claims;
@@ -31,35 +32,34 @@ namespace RebacExperiments.Server.Api.Controllers
                 return BadRequest();
             }
 
-            // Create ClaimsPrincipal from Database 
-            var serviceResult = await userService.GetClaimsAsync(
-                context: context,
-                username: credentials.Username,
-                password: credentials.Password,
-                cancellationToken: cancellationToken);
-
-            // If it's not a valid user return 
-            if (!serviceResult.Succeeded)
+            try
             {
-                if(_logger.IsErrorEnabled())
+                // Create ClaimsPrincipal from Database 
+                var userClaims = await userService.GetClaimsAsync(
+                    context: context,
+                    username: credentials.Username,
+                    password: credentials.Password,
+                    cancellationToken: cancellationToken);
+
+                // Create the ClaimsPrincipal
+                var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                // It's a valid ClaimsPrincipal, sign in
+                await HttpContext.SignInAsync(claimsPrincipal, new AuthenticationProperties { IsPersistent = credentials.RememberMe });
+
+                return Ok();
+            } 
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(SignInUser));
+
+                return ex switch
                 {
-                    _logger.LogError("Authentication failed with ErrorCode = {ErrorCode} and ErrorMessage = {ErrorMessage}", serviceResult.Error.ErrorCode, serviceResult.Error.Message);
-                }
-
-                return Forbid();
+                    AuthenticationFailedException _ => Unauthorized(),
+                    _ => StatusCode(500, "An Internal Server Error occured"),
+                };
             }
-
-            // Get the Data from the Service Result
-            var userClaims = serviceResult.Data;
-
-            // Create the ClaimsPrincipal
-            var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-            // It's a valid ClaimsPrincipal, sign in
-            await HttpContext.SignInAsync(claimsPrincipal, new AuthenticationProperties { IsPersistent = credentials.RememberMe });
-
-            return Ok();
         }
 
         [HttpPost]
