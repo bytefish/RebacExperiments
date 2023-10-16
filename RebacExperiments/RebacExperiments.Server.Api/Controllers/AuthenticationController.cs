@@ -66,6 +66,8 @@ namespace RebacExperiments.Server.Api.Controllers
         [Route("sign-out")]
         public async Task<IActionResult> SignOutUser()
         {
+            _logger.TraceMethodEntry();
+
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return Ok();

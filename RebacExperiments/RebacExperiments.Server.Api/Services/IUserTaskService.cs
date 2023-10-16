@@ -31,6 +31,15 @@ namespace RebacExperiments.Server.Api.Services
         Task<UserTask> GetUserTaskByIdAsync(ApplicationDbContext context, int userTaskId, int currentUserId, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Gets all <see cref="UserTask"/> the given User has Viewer or Owner access to.
+        /// </summary>
+        /// <param name="context"><see cref="ApplicationDbContext"/> to use</param>
+        /// <param name="currentUserId"><see cref="User"/> ID</param>
+        /// <param name="cancellationToken">CancellationToken to cancel asynchronous processing</param>
+        /// <returns>The <see cref="UserTask"/> for the given ID</returns>
+        Task<List<UserTask>> GetUserTasksAsync(ApplicationDbContext context, int currentUserId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Updates a <see cref="UserTask"/> for the current user.
         /// </summary>
         /// <param name="context"><see cref="ApplicationDbContext"/> to use</param>

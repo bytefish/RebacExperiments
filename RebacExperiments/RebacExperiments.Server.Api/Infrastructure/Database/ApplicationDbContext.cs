@@ -1,7 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore;
-using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Models;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Database
@@ -14,7 +13,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         /// <summary>
         /// Logger.
         /// </summary>
-        public ILogger<ApplicationDbContext> Logger { get; }
+        internal ILogger<ApplicationDbContext> Logger { get; }
 
         /// <summary>
         /// Constructor.
@@ -91,8 +90,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                 entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("UserTaskID")
-                    .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_UserTask]")
-                    .UseHiLo("[Application].[sq_UserTask]")
+                    .UseHiLo("sq_UserTask", "Application")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Title)
@@ -177,8 +175,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                 entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("OrganizationID")
-                    .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Organization]")
-                    .UseHiLo("[Application].[sq_Organization]")
+                    .UseHiLo("sq_Organization", "Application")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name)
@@ -231,8 +228,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                 entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("TeamID")
-                    .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Team]")
-                    .UseHiLo("[Application].[sq_Team]")
+                    .UseHiLo("sq_Team", "Application")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name)
@@ -285,8 +281,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                 entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("RelationTupleID")
-                    .HasDefaultValueSql("NEXT VALUE FOR [Identity].[sq_RelationTuple]")
-                    .UseHiLo("[Identity].[sq_RelationTuple]")
+                    .UseHiLo("sq_RelationTuple", "Identity")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ObjectKey)
@@ -361,8 +356,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                 entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("UserID")
-                    .HasDefaultValueSql("NEXT VALUE FOR [Identity].[sq_User]")
-                    .UseHiLo("[Identity].[sq_User]")
+                    .UseHiLo("sq_User", "Identity")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.FullName)
@@ -428,7 +422,6 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                 entity.Property(x => x.Id)
                     .HasColumnType("INT")
                     .HasColumnName("RoleID")
-                    .HasDefaultValueSql("NEXT VALUE FOR [Application].[sq_Role]")
                     .UseHiLo("[Application].[sq_Role]")
                     .ValueGeneratedOnAdd();
 

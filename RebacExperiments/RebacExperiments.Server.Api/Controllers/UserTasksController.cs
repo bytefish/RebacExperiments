@@ -53,6 +53,34 @@ namespace RebacExperiments.Server.Api.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize(Policy = Policies.RequireUserRole)]
+        public async Task<IActionResult> GetUserTasks([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, CancellationToken cancellationToken)
+        {
+            _logger.TraceMethodEntry();
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var userTasks = await userTaskService.GetUserTasksAsync(context, User.GetUserId(), cancellationToken);
+
+                return Ok(userTasks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
+
+                return ex switch
+                {
+                    _ => StatusCode(500, "An Internal Server Error occured"),
+                };
+            }
+        }
+
         [HttpPost]
         [Authorize(Policy = Policies.RequireUserRole)]
         public async Task<IActionResult> PostUserTask([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, [FromBody] UserTask userTask, CancellationToken cancellationToken)

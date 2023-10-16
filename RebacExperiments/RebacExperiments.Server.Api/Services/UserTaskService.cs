@@ -6,7 +6,6 @@ using RebacExperiments.Server.Api.Infrastructure.Database;
 using RebacExperiments.Server.Api.Infrastructure.Exceptions;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Models;
-using System.Threading.Tasks;
 
 namespace RebacExperiments.Server.Api.Services
 {
@@ -25,6 +24,9 @@ namespace RebacExperiments.Server.Api.Services
 
             using (var transaction = await context.Database.BeginTransactionAsync(cancellationToken))
             {
+                // Make sure the Current User is the last editor:
+                userTask.LastEditedBy = currentUserId;
+
                 // Add the new Task, the HiLo Pattern automatically assigns a new Id using the HiLo Pattern
                 await context.AddAsync(userTask, cancellationToken);
 
@@ -50,7 +52,6 @@ namespace RebacExperiments.Server.Api.Services
 
             return userTask;
         }
-
 
         public async Task<UserTask> GetUserTaskByIdAsync(ApplicationDbContext context, int userTaskId, int currentUserId, CancellationToken cancellationToken)
         {
@@ -84,6 +85,17 @@ namespace RebacExperiments.Server.Api.Services
             return userTask;
         }
 
+        public async Task<List<UserTask>> GetUserTasksAsync(ApplicationDbContext context, int currentUserId, CancellationToken cancellationToken)
+        {
+            _logger.TraceMethodEntry();
+
+            var userTasksViewer = context.ListUserObjects<UserTask>(currentUserId, Relations.Viewer);
+            var userTasksOwner = context.ListUserObjects<UserTask>(currentUserId, Relations.Owner);
+
+            var userTasks = userTasksViewer.Union(userTasksOwner);
+
+            return await userTasks.ToListAsync(cancellationToken);
+        }
 
         public async Task<UserTask> UpdateUserTaskAsync(ApplicationDbContext context, UserTask userTask, int currentUserId, CancellationToken cancellationToken)
         {
