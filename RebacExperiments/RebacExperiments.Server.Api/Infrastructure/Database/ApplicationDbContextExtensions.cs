@@ -133,5 +133,37 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
 
             await context.Set<RelationTuple>().AddAsync(relationTuple, cancellationToken);
         }
+
+        /// <summary>
+        /// Creates a Relationship between a <typeparamref name="TObjectType"/> and a <typeparamref name="TSubjectType"/>.
+        /// </summary>
+        /// <typeparam name="TObjectType">Type of the Object</typeparam>
+        /// <typeparam name="TSubjectType">Type of the Subject</typeparam>
+        /// <param name="context">DbContext</param>
+        /// <param name="objectId">Object Entity</param>
+        /// <param name="relation">Relation between Object and Subject</param>
+        /// <param name="subjectId">Subject Entity</param>
+        /// <param name="subjectRelation">Relation to the Subject</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns></returns>
+        public static async Task AddRelationshipAsync<TObjectType, TSubjectType>(this ApplicationDbContext context, int objectId, string relation, int subjectId, string? subjectRelation, int lastEditedBy, CancellationToken cancellationToken = default)
+            where TObjectType : Entity
+            where TSubjectType : Entity
+        {
+            context.Logger.TraceMethodEntry();
+
+            var relationTuple = new RelationTuple
+            {
+                ObjectNamespace = typeof(TObjectType).Name,
+                ObjectKey = objectId,
+                ObjectRelation = relation,
+                SubjectNamespace = typeof(TSubjectType).Name,
+                SubjectKey = subjectId,
+                SubjectRelation = subjectRelation,
+                LastEditedBy = lastEditedBy
+            };
+
+            await context.Set<RelationTuple>().AddAsync(relationTuple, cancellationToken);
+        }
     }
 }

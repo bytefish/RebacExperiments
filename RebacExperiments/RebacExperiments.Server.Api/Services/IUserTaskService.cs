@@ -11,13 +11,43 @@ namespace RebacExperiments.Server.Api.Services
     public interface IUserTaskService
     {
         /// <summary>
-        /// 
+        /// Creates a new <see cref="UserTask"/> and assigns default relationships.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="userTaskId"></param>
-        /// <param name="currentUserId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="context"><see cref="ApplicationDbContext"/> to use</param>
+        /// <param name="userTask"><see cref="UserTask"/> with values</param>
+        /// <param name="currentUserId"><see cref="User"/> ID</param>
+        /// <param name="cancellationToken">CancellationToken to cancel asynchronous processing</param>
+        /// <returns>The created <see cref="UserTask"/></returns>
+        Task<UserTask> CreateUserTaskAsync(ApplicationDbContext context, UserTask userTask, int currentUserId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets a <see cref="UserTask"/> by id for the current user.
+        /// </summary>
+        /// <param name="context"><see cref="ApplicationDbContext"/> to use</param>
+        /// <param name="userTaskId"><see cref="UserTask"/> ID</param>
+        /// <param name="currentUserId"><see cref="User"/> ID</param>
+        /// <param name="cancellationToken">CancellationToken to cancel asynchronous processing</param>
+        /// <returns>The <see cref="UserTask"/> for the given ID</returns>
         Task<UserTask> GetUserTaskByIdAsync(ApplicationDbContext context, int userTaskId, int currentUserId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates a <see cref="UserTask"/> for the current user.
+        /// </summary>
+        /// <param name="context"><see cref="ApplicationDbContext"/> to use</param>
+        /// <param name="userTask"><see cref="UserTask"/> with values</param>
+        /// <param name="currentUserId"><see cref="User"/> ID</param>
+        /// <param name="cancellationToken">CancellationToken to cancel asynchronous processing</param>
+        /// <returns>The Updated <see cref="UserTask"/></returns>
+        Task<UserTask> UpdateUserTaskAsync(ApplicationDbContext context, UserTask userTask, int currentUserId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Deletes a <see cref="UserTask"/> and all of its relationships.
+        /// </summary>
+        /// <param name="context"><see cref="ApplicationDbContext"/> to use</param>
+        /// <param name="userTask"><see cref="UserTask"/> with values</param>
+        /// <param name="currentUserId"><see cref="User"/> ID</param>
+        /// <param name="cancellationToken">CancellationToken to cancel asynchronous processing</param>
+        /// <returns>The Updated <see cref="UserTask"/></returns>
+        Task DeleteUserTaskAsync(ApplicationDbContext context, UserTask userTask, int currentUserId, CancellationToken cancellationToken);
     }
 }
