@@ -39,7 +39,7 @@ namespace RebacExperiments.Server.Api.Controllers
                 var userTask = await userTaskService.GetUserTaskByIdAsync(context, userTaskId, User.GetUserId(), cancellationToken);
 
                 return Ok(userTask);
-            } 
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
@@ -145,7 +145,7 @@ namespace RebacExperiments.Server.Api.Controllers
         [HttpDelete]
         [Route("{id}")]
         [Authorize(Policy = Policies.RequireUserRole)]
-        public async Task<IActionResult> DeleteUserTask([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, [FromBody] UserTask userTask, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteUserTask([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, [FromRoute(Name = "id")] int userTaskId, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
 
@@ -156,9 +156,9 @@ namespace RebacExperiments.Server.Api.Controllers
 
             try
             {
-                await userTaskService.UpdateUserTaskAsync(context, userTask, User.GetUserId(), cancellationToken);
+                await userTaskService.DeleteUserTaskAsync(context, userTaskId, User.GetUserId(), cancellationToken);
 
-                return Ok(userTask);
+                return Ok();
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore;
+using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Models;
 
@@ -86,6 +87,23 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
                 join objects in context.ListObjects(typeof(TObjectType).Name, relation, typeof(TSubjectType).Name, subjectId)
                     on entity.Id equals objects.ObjectKey
                 select entity;
+        }
+
+        /// <summary>
+        /// Returns all <typeparamref name="TObjectType"/> for a given <typeparamref name="TSubjectType"/> and a list of Relations.
+        /// </summary>
+        /// <param name="subjectId">Subject Key to resolve</param>
+        /// <param name="relation">Relation between the Object and Subject</param>
+        /// <returns>All <typeparamref name="TEntityType"/> the user is related to</returns>
+        public static IQueryable<TObjectType> ListObjects<TObjectType, TSubjectType>(this ApplicationDbContext context, int subjectId, string[] relations)
+            where TObjectType : Entity
+            where TSubjectType : Entity
+        {
+            context.Logger.TraceMethodEntry();
+
+            return relations
+                .Select(relation => ListObjects<TObjectType, TSubjectType>(context, subjectId, relation))
+                .Aggregate((current, next) => current.Union(next));
         }
 
         /// <summary>

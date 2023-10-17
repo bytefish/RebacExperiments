@@ -53,10 +53,10 @@ namespace RebacExperiments.Server.Api.Services
         /// Deletes a <see cref="UserTask"/> and all of its relationships.
         /// </summary>
         /// <param name="context"><see cref="ApplicationDbContext"/> to use</param>
-        /// <param name="userTask"><see cref="UserTask"/> with values</param>
+        /// <param name="userTaskId"><see cref="UserTask"/> to delete</param>
         /// <param name="currentUserId"><see cref="User"/> ID</param>
         /// <param name="cancellationToken">CancellationToken to cancel asynchronous processing</param>
         /// <returns>The Updated <see cref="UserTask"/></returns>
-        Task DeleteUserTaskAsync(ApplicationDbContext context, UserTask userTask, int currentUserId, CancellationToken cancellationToken);
+        Task DeleteUserTaskAsync(ApplicationDbContext context, int userTaskId, int currentUserId, CancellationToken cancellationToken);
     }
 }

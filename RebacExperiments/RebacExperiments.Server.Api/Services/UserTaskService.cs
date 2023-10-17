@@ -139,65 +139,74 @@ namespace RebacExperiments.Server.Api.Services
         }
 
 
-        public async Task DeleteUserTaskAsync(ApplicationDbContext context, UserTask userTask, int currentUserId, CancellationToken cancellationToken)
+        public async Task DeleteUserTaskAsync(ApplicationDbContext context, int userTaskId, int currentUserId, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
 
-            bool isAuthorized = await context.CheckUserObject<UserTask>(currentUserId, userTask.Id, Relations.Owner, cancellationToken);
+            bool isAuthorized = await context.CheckUserObject<UserTask>(currentUserId, userTaskId, Relations.Owner, cancellationToken);
 
             if (!isAuthorized)
             {
                 throw new EntityUnauthorizedAccessException()
                 {
                     EntityName = nameof(UserTask),
-                    EntityId = userTask.Id,
+                    EntityId = userTaskId,
                     UserId = currentUserId,
                 };
             }
 
             using (var transaction = await context.Database.BeginTransactionAsync(cancellationToken))
             {
-                // Start by deleting all References to the UserTask. This looks repetitive
-                // and it is. We should probably pass in a list of relations to delete,
-                // create a union and delete them in one go.
-                await context
-                    .ListObjects<Organization, UserTask>(userTask.Id, Relations.Viewer)
-                    .ExecuteDeleteAsync(cancellationToken);
+                var userTask = await context.UserTasks
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == userTaskId);
 
-                await context
-                    .ListObjects<Organization, UserTask>(userTask.Id, Relations.Owner)
-                    .ExecuteDeleteAsync(cancellationToken);
-                
-                await context
-                    .ListObjects<Team, UserTask>(userTask.Id, Relations.Viewer)
-                    .ExecuteDeleteAsync(cancellationToken);
+                if (userTask == null)
+                {
+                    throw new EntityNotFoundException()
+                    {
+                        EntityName = nameof(UserTask),
+                        EntityId = userTaskId,
+                    };
+                }
 
-                await context
-                    .ListObjects<Team, UserTask>(userTask.Id, Relations.Owner)
-                    .ExecuteDeleteAsync(cancellationToken);
+                // Start by deleting all Relationships, where UserTask is the Object ...
+                {
+                    int numRowsDeleted = await context
+                        .RelationTuples.Where(x => x.ObjectNamespace == nameof(UserTask) && x.ObjectKey == userTask.Id)
+                        .ExecuteDeleteAsync(cancellationToken);
 
-                await context
-                    .ListObjects<User, UserTask>(userTask.Id, Relations.Viewer)
-                    .ExecuteDeleteAsync(cancellationToken);
+                    if (_logger.IsDebugEnabled())
+                    {
+                        _logger.LogDebug("'{NumRowsDeleted}' Relations deleted for Object UserTask (Id = {UserTaskId})", numRowsDeleted, userTaskId);
+                    }
+                }
 
-                await context
-                    .ListObjects<User, UserTask>(userTask.Id, Relations.Owner)
-                    .ExecuteDeleteAsync(cancellationToken);
+                // ... then delete all Relationships, where UserTask is the Subject ...
+                {
+                    int numRowsDeleted = await context
+                        .RelationTuples.Where(x => x.SubjectNamespace == nameof(UserTask) && x.SubjectKey == userTask.Id)
+                        .ExecuteDeleteAsync(cancellationToken);
+
+                    if (_logger.IsDebugEnabled())
+                    {
+                        _logger.LogDebug("'{NumRowsDeleted}' Relations deleted for Subject UserTask (Id = {UserTaskId})", numRowsDeleted, userTaskId);
+                    }
+                }
 
                 // After removing all possible references, delete the UserTask itself
                 int rowsAffected = await context.UserTasks
-                    .Where(t => t.Id == userTask.Id && t.RowVersion == userTask.RowVersion)
+                    .Where(t => t.Id == userTask.Id)
                     .ExecuteDeleteAsync(cancellationToken);
 
-                // If no row was affected, I want to throw an Exception. Why? Because someone might
-                // have edited the Task, while we were about to delete it. And removing it after
-                // someone has concurrently been updating it, feels wrong ...
+                // No Idea if this could happen, because we are in a Transaction and there
+                // is a row, which should be locked. So this shouldn't happen at all...
                 if (rowsAffected == 0)
                 {
                     throw new EntityConcurrencyException()
                     {
                         EntityName = nameof(UserTask),
-                        EntityId = userTask.Id,
+                        EntityId = userTaskId,
                     };
                 }
 

@@ -6,71 +6,108 @@ using RebacExperiments.Server.Api.Infrastructure.Authentication;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
 using RebacExperiments.Server.Api.Services;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
-var builder = WebApplication.CreateBuilder(args);
+// We will log to %LocalAppData%/RebacExperiments to store the Logs, so it doesn't need to be configured 
+// to a different path, when you run it on your machine.
+string logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RebacExperiments");
 
-// Add services to the container
-builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<IUserTaskService, UserTaskService>();
-builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
+// We are writing with RollingFileAppender using a daily rotation, and we want to have the filename as 
+// as "LogRebacExperiments-{Date}.log", the "{Date}" placeholder will be replaced by Serilog itself.
+string logFilePath = Path.Combine(logDirectory, "LogRebacExperiments-.log");
 
-// Database
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+// Configure the Serilog Logger. This Serilog Logger will be passed 
+// to the Microsoft.Extensions.Logging LoggingBuilder using the 
+// LoggingBuilder#AddSerilog(...) extension.
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithMachineName()
+    .Enrich.WithEnvironmentName()
+    .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+try
 {
-    var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabase");
+    var builder = WebApplication.CreateBuilder(args);
 
-    if (connectionString == null)
+    // Add services to the container
+    builder.Services.AddSingleton<IUserService, UserService>();
+    builder.Services.AddSingleton<IUserTaskService, UserTaskService>();
+    builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
+    // Logging
+    builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+
+    // Database
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
-        throw new InvalidOperationException("No ConnectionString named 'ApplicationDatabase' was found");
-    }
+        var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabase");
 
-    options
-        .EnableSensitiveDataLogging().UseSqlServer(connectionString);
-});
-
-// Cookie Authentication
-builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = SameSiteMode.Lax; // We don't want to deal with CSRF Tokens
-        
-        options.Events.OnRedirectToAccessDenied = (context) =>
+        if (connectionString == null)
         {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            throw new InvalidOperationException("No ConnectionString named 'ApplicationDatabase' was found");
+        }
 
-            return Task.CompletedTask;
-        };
-
-        options.Events.OnRedirectToLogin = (context) =>
-        {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-
-            return Task.CompletedTask;
-        };
+        options
+            .EnableSensitiveDataLogging().UseSqlServer(connectionString);
     });
 
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
+    // Cookie Authentication
+    builder.Services
+        .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SameSite = SameSiteMode.Lax; // We don't want to deal with CSRF Tokens
 
-// Add Policies
-builder.Services.AddAuthorization(options =>
+            options.Events.OnRedirectToAccessDenied = (context) =>
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+
+                return Task.CompletedTask;
+            };
+
+            options.Events.OnRedirectToLogin = (context) =>
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+                return Task.CompletedTask;
+            };
+        });
+
+    builder.Services.AddControllers();
+    builder.Services.AddSwaggerGen();
+
+    // Add Policies
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy(Policies.RequireUserRole, policy => policy.RequireRole(Roles.User));
+        options.AddPolicy(Policies.RequireAdminRole, policy => policy.RequireRole(Roles.Administrator));
+    });
+
+    var app = builder.Build();
+
+    // Configure the HTTP request pipeline.
+    app.UseHttpsRedirection();
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
+} 
+catch(Exception exception)
 {
-    options.AddPolicy(Policies.RequireUserRole, policy => policy.RequireRole(Roles.User));
-    options.AddPolicy(Policies.RequireAdminRole, policy => policy.RequireRole(Roles.Administrator));
-});
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-app.UseHttpsRedirection();
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+    Log.Fatal(exception, "An unhandeled exception occured.");
+}
+finally
+{
+    // Wait 0.5 seconds before closing and flushing, to gather the last few logs.
+    await Task.Delay(TimeSpan.FromMilliseconds(500));
+    await Log.CloseAndFlushAsync();
+}
