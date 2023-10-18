@@ -116,9 +116,8 @@ namespace RebacExperiments.Server.Api.Tests
         }
 
         /// <summary>
-        /// In this test we create a <see cref="User"/> (user) and two  <see cref="UserTask"/> (task1, task2). The 'user' is 
-        /// member of a <see cref="Team"/> (team). The 'user' is also a member of an <see cref="Organization"/> (oganization). Members 
-        /// of the 'organization' are viewers of 'task1' and 'task2'. Members of the 'team' are owners of the 'task2'.
+        /// In this test we create a <see cref="User"/> (user) and assign two <see cref="UserTask"/> (tas1, task2). The 'user' 
+        /// is 'viewer' for 'task1' and an 'owner' for 'task2'.
         /// 
         /// The Relationship-Table is given below.
         /// 

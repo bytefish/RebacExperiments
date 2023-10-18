@@ -29,7 +29,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         /// Gets or sets the Users.
         /// </summary>
         public DbSet<User> Users { get; set; } = null!;
-        
+
         /// <summary>
         /// Gets or sets the Roles.
         /// </summary>

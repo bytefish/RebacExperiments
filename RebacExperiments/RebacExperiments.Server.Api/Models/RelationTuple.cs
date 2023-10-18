@@ -2,7 +2,7 @@
 
 namespace RebacExperiments.Server.Api.Models
 {
-    public class RelationTuple: Entity
+    public class RelationTuple : Entity
     {
         /// <summary>
         /// Gets or sets the ObjectKey.
