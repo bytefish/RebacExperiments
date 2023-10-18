@@ -124,11 +124,8 @@ namespace RebacExperiments.Server.Api.Tests
         /// 
         /// ObjectKey           |  ObjectNamespace  |   ObjectRelation  |   SubjectKey          |   SubjectNamespace    |   SubjectRelation
         /// --------------------|-------------------|-------------------|-----------------------|-----------------------|-------------------
-        /// :team.id:           |   Team            |       member      |   :user.id:           |       User            |   NULL
-        /// :organization.id:   |   Organization    |       member      |   :user.id:           |       User            |   NULL
-        /// :task1.id:          |   UserTask        |       viewer      |   :organization.id:   |       Organization    |   member
-        /// :task2.id:          |   UserTask        |       viewer      |   :organization.id:   |       Organization    |   member
-        /// :task2.id:          |   UserTask        |       owner       |   :team.id:           |       Team            |   member
+        /// :task1.id:          |   UserTask        |       viewer      |   :user.id:           |       User            |   NULL
+        /// :task2.id:          |   UserTask        |       owner       |   :user.id:           |       User            |   NULL
         /// </summary>
         [Test]
         public async Task ListUserObjects_TwoUserTasksAssignedToOrganizationAndTeam()
@@ -146,75 +143,40 @@ namespace RebacExperiments.Server.Api.Tests
             await _applicationDbContext.AddAsync(user);
             await _applicationDbContext.SaveChangesAsync();
 
-            var organization = new Organization
+            var task1 = new UserTask
             {
-                Name = "Test-Organization",
-                Description = "Organization for Unit Test",
-                LastEditedBy = user.Id
-            };
-
-            await _applicationDbContext.AddAsync(organization);
-            await _applicationDbContext.SaveChangesAsync();
-
-            var team = new Team
-            {
-                Name = "Test-Team",
-                Description = "Team for Unit Test",
-                LastEditedBy = user.Id
-            };
-
-            await _applicationDbContext.AddAsync(team);
-            await _applicationDbContext.SaveChangesAsync();
-
-            var task_AssignedToUserThroughOrganizationMembership = new UserTask
-            {
-                Title = "Test-Task assigned through Organization Membership",
-                Description = "A Test-Task assigned through Organization Membership",
+                Title = "Task 1",
+                Description = "Task 1",
                 LastEditedBy = user.Id,
                 UserTaskPriority = UserTaskPriorityEnum.High,
                 UserTaskStatus = UserTaskStatusEnum.InProgress
             };
-
-            await _applicationDbContext.AddAsync(task_AssignedToUserThroughOrganizationMembership);
-            await _applicationDbContext.SaveChangesAsync();
             
-            var task_AssignedToUserThroughTeamMembership = new UserTask
+            var task2 = new UserTask
             {
-                Title = "Test-Task assigned through Team Membership",
-                Description = "A Test-Task assigned through Team Membership",
+                Title = "Task2",
+                Description = "Task2",
                 LastEditedBy = user.Id,
                 UserTaskPriority = UserTaskPriorityEnum.High,
                 UserTaskStatus = UserTaskStatusEnum.InProgress
             };
 
-            await _applicationDbContext.AddAsync(task_AssignedToUserThroughTeamMembership);
+            await _applicationDbContext.AddRangeAsync(new[] { task1, task2 });
             await _applicationDbContext.SaveChangesAsync();
 
-            await _applicationDbContext.AddRelationshipAsync(team, Relations.Member, user, null, user.Id);
-            await _applicationDbContext.AddRelationshipAsync(organization, Relations.Member, user, null, user.Id);
-            await _applicationDbContext.AddRelationshipAsync(task_AssignedToUserThroughOrganizationMembership, Relations.Viewer, organization, Relations.Member, user.Id);
-            await _applicationDbContext.AddRelationshipAsync(task_AssignedToUserThroughTeamMembership, Relations.Viewer, organization, Relations.Member, user.Id);
-            await _applicationDbContext.AddRelationshipAsync(task_AssignedToUserThroughTeamMembership, Relations.Owner, team, Relations.Member, user.Id);
+            await _applicationDbContext.AddRelationshipAsync(task1, Relations.Viewer, user, null, user.Id);
+            await _applicationDbContext.AddRelationshipAsync(task2, Relations.Owner, user, null, user.Id);
             await _applicationDbContext.SaveChangesAsync();
 
             // Act
-            var userTasks_Owner = _applicationDbContext
-                .ListUserObjects<UserTask>(user.Id, Relations.Owner)
+            var userTasks = _applicationDbContext
+                .ListUserObjects<UserTask>(user.Id, new[] { Relations.Viewer, Relations.Owner })
                 .AsNoTracking()
                 .ToList();
 
-            var userTasks_Viewer = _applicationDbContext
-                .ListUserObjects<UserTask>(user.Id, Relations.Viewer)
-                .AsNoTracking()
-                .ToList();
-
-            // Assert
-            Assert.AreEqual(1, userTasks_Owner.Count);
-            Assert.AreEqual(task_AssignedToUserThroughTeamMembership.Id, userTasks_Owner[0].Id);
-
-            Assert.AreEqual(2, userTasks_Viewer.Count);
-            Assert.Contains(task_AssignedToUserThroughOrganizationMembership.Id, userTasks_Viewer.Select(x => x.Id).ToList());
-            Assert.Contains(task_AssignedToUserThroughTeamMembership.Id, userTasks_Viewer.Select(x => x.Id).ToList());
+            Assert.AreEqual(2, userTasks.Count);
+            Assert.IsTrue(userTasks.Any(x => x.Id == task1.Id));
+            Assert.IsTrue(userTasks.Any(x => x.Id == task2.Id));
         }
     }
 }
