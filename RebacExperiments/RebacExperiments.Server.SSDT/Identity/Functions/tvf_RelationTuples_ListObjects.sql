@@ -7,9 +7,14 @@
 )
 RETURNS @returntable TABLE
 (
-     [ObjectNamespace]   NVARCHAR(50)
+
+     [RelationTupleID]   INT
+    ,[ObjectNamespace]   NVARCHAR(50)
     ,[ObjectKey]         INT
     ,[ObjectRelation]    NVARCHAR(50)
+    ,[SubjectNamespace]  NVARCHAR(50)
+    ,[SubjectKey]        INT
+    ,[SubjectRelation]   NVARCHAR(50)
 )
 AS
 BEGIN
@@ -51,7 +56,7 @@ BEGIN
     INSERT 
         @returntable
     SELECT DISTINCT 
-	    [ObjectNamespace], [ObjectKey], [ObjectRelation]
+	    [RelationTupleID], [ObjectNamespace], [ObjectKey], [ObjectRelation], [SubjectNamespace], [SubjectKey], [SubjectRelation]
     FROM 
 	    [RelationTuples] 
     WHERE
