@@ -89,12 +89,11 @@ namespace RebacExperiments.Server.Api.Services
         {
             _logger.TraceMethodEntry();
 
-            var userTasksViewer = context.ListUserObjects<UserTask>(currentUserId, Relations.Viewer);
-            var userTasksOwner = context.ListUserObjects<UserTask>(currentUserId, Relations.Owner);
+            var userTasks = context
+                .ListUserObjects<UserTask>(currentUserId, new[] { Relations.Viewer, Relations.Owner })
+                .ToListAsync(cancellationToken);
 
-            var userTasks = userTasksViewer.Union(userTasksOwner);
-
-            return await userTasks.ToListAsync(cancellationToken);
+            return await userTasks;
         }
 
         public async Task<UserTask> UpdateUserTaskAsync(ApplicationDbContext context, UserTask userTask, int currentUserId, CancellationToken cancellationToken)

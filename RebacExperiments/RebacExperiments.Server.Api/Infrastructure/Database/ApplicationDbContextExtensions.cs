@@ -110,7 +110,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
         /// Returns all <typeparamref name="TEntityType"/> for a given <paramref name="userId"/> and <paramref name="relation"/>.
         /// </summary>
         /// <param name="userId">UserID</param>
-        /// <param name="relation">Relation between the User and UserTask</param>
+        /// <param name="relation">Relation between the User and a <typeparamref name="TEntityType"/></param>
         /// <returns>All <typeparamref name="TEntityType"/> the user is related to</returns>
         public static IQueryable<TEntityType> ListUserObjects<TEntityType>(this ApplicationDbContext context, int userId, string relation)
             where TEntityType : Entity
@@ -118,6 +118,20 @@ namespace RebacExperiments.Server.Api.Infrastructure.Database
             context.Logger.TraceMethodEntry();
 
             return context.ListObjects<TEntityType, User>(userId, relation);
+        }
+
+        /// <summary>
+        /// Returns all <typeparamref name="TEntityType"/> for a given <paramref name="userId"/> and <paramref name="relation"/>.
+        /// </summary>
+        /// <param name="userId">UserID</param>
+        /// <param name="relation">Relation between the User and a <typeparamref name="TEntityType"/></param>
+        /// <returns>All <typeparamref name="TEntityType"/> the user is related to</returns>
+        public static IQueryable<TEntityType> ListUserObjects<TEntityType>(this ApplicationDbContext context, int userId, string[] relations)
+            where TEntityType : Entity
+        {
+            context.Logger.TraceMethodEntry();
+
+            return context.ListObjects<TEntityType, User>(userId, relations);
         }
 
         /// <summary>
