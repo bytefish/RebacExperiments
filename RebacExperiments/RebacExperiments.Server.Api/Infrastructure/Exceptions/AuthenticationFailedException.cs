@@ -4,7 +4,7 @@ using RebacExperiments.Server.Api.Infrastructure.Errors;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Exceptions
 {
-    public class AuthenticationFailedException : ApplicationException
+    public class AuthenticationFailedException : ApplicationErrorException
     {
         /// <summary>
         /// Gets or sets an ErrorCode.

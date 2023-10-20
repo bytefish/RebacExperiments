@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using RebacExperiments.Server.Api.Infrastructure.Authentication;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
+using RebacExperiments.Server.Api.Infrastructure.Errors;
 using RebacExperiments.Server.Api.Services;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -88,6 +89,14 @@ try
         options.AddPolicy(Policies.RequireUserRole, policy => policy.RequireRole(Roles.User));
         options.AddPolicy(Policies.RequireAdminRole, policy => policy.RequireRole(Roles.Administrator));
     });
+
+    // Add Error Handler
+    builder.Services.Configure<ApplicationErrorHandlerOptions>(o =>
+    {
+        o.IncludeExceptionDetails = builder.Environment.IsDevelopment();
+    });
+
+    builder.Services.AddSingleton<ApplicationErrorHandler>();
 
     // Add the Rate Limiting
     builder.Services.AddRateLimiter(options =>

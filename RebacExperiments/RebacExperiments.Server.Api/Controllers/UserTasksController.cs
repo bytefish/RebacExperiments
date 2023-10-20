@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using RebacExperiments.Server.Api.Infrastructure.Authentication;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
-using RebacExperiments.Server.Api.Infrastructure.Exceptions;
+using RebacExperiments.Server.Api.Infrastructure.Errors;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Models;
 using RebacExperiments.Server.Api.Services;
@@ -17,10 +17,12 @@ namespace RebacExperiments.Server.Api.Controllers
     public class UserTasksController : ControllerBase
     {
         private readonly ILogger<UserTasksController> _logger;
+        private readonly ApplicationErrorHandler _applicationErrorHandler;
 
-        public UserTasksController(ILogger<UserTasksController> logger)
+        public UserTasksController(ILogger<UserTasksController> logger, ApplicationErrorHandler applicationErrorHandler)
         {
             _logger = logger;
+            _applicationErrorHandler = applicationErrorHandler;
         }
 
         [HttpGet]
@@ -33,7 +35,7 @@ namespace RebacExperiments.Server.Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return _applicationErrorHandler.HandleInvalidModelState(HttpContext, ModelState);
             }
 
             try
@@ -46,12 +48,7 @@ namespace RebacExperiments.Server.Api.Controllers
             {
                 _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
 
-                return ex switch
-                {
-                    EntityNotFoundException _ => NotFound(),
-                    EntityUnauthorizedAccessException _ => Forbid(),
-                    _ => StatusCode(500, "An Internal Server Error occured"),
-                };
+                return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
 
@@ -64,7 +61,7 @@ namespace RebacExperiments.Server.Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return _applicationErrorHandler.HandleInvalidModelState(HttpContext, ModelState);
             }
 
             try
@@ -77,10 +74,7 @@ namespace RebacExperiments.Server.Api.Controllers
             {
                 _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
 
-                return ex switch
-                {
-                    _ => StatusCode(500, "An Internal Server Error occured"),
-                };
+                return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
 
@@ -93,7 +87,7 @@ namespace RebacExperiments.Server.Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return _applicationErrorHandler.HandleInvalidModelState(HttpContext, ModelState);
             }
 
             try
@@ -106,12 +100,7 @@ namespace RebacExperiments.Server.Api.Controllers
             {
                 _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
 
-                return ex switch
-                {
-                    EntityNotFoundException _ => NotFound(),
-                    EntityUnauthorizedAccessException _ => Forbid(),
-                    _ => StatusCode(500, "An Internal Server Error occured"),
-                };
+                return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
 
@@ -125,7 +114,7 @@ namespace RebacExperiments.Server.Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return _applicationErrorHandler.HandleInvalidModelState(HttpContext, ModelState);
             }
 
             try
@@ -138,12 +127,7 @@ namespace RebacExperiments.Server.Api.Controllers
             {
                 _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
 
-                return ex switch
-                {
-                    EntityNotFoundException _ => NotFound(),
-                    EntityUnauthorizedAccessException _ => Forbid(),
-                    _ => StatusCode(500, "An Internal Server Error occured"),
-                };
+                return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
 
@@ -157,7 +141,7 @@ namespace RebacExperiments.Server.Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return _applicationErrorHandler.HandleInvalidModelState(HttpContext, ModelState);
             }
 
             try
@@ -170,12 +154,7 @@ namespace RebacExperiments.Server.Api.Controllers
             {
                 _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
 
-                return ex switch
-                {
-                    EntityNotFoundException _ => NotFound(),
-                    EntityUnauthorizedAccessException _ => Forbid(),
-                    _ => StatusCode(500, "An Internal Server Error occured"),
-                };
+                return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
     }

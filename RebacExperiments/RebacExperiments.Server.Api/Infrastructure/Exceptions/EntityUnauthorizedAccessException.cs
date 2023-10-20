@@ -4,7 +4,7 @@ using RebacExperiments.Server.Api.Infrastructure.Errors;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Exceptions
 {
-    public class EntityUnauthorizedAccessException : ApplicationException
+    public class EntityUnauthorizedAccessException : ApplicationErrorException
     {
         /// <summary>
         /// Gets or sets an error code.

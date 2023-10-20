@@ -5,7 +5,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Exceptions
     /// <summary>
     /// Base Exception for the Application.
     /// </summary>
-    public abstract class ApplicationException : Exception
+    public abstract class ApplicationErrorException : Exception
     {
         /// <summary>
         /// Gets the Error Code.
@@ -17,7 +17,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Exceptions
         /// </summary>
         public abstract string ErrorMessage { get; }
 
-        protected ApplicationException(string? message, Exception? innerException)
+        protected ApplicationErrorException(string? message, Exception? innerException)
             : base(message, innerException)
         {
         }

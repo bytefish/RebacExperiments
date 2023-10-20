@@ -6,6 +6,16 @@
     public static class ErrorCodes
     {
         /// <summary>
+        /// Internal Server Error.
+        /// </summary>
+        public const string InternalServerError = "System:000001";
+
+        /// <summary>
+        /// Validation Error.
+        /// </summary>
+        public const string ValidationFailed = "Validation:000001";
+
+        /// <summary>
         /// General Authentication Error.
         /// </summary>
         public const string AuthenticationFailed = "Auth:000001";

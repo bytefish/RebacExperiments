@@ -4,7 +4,7 @@ using RebacExperiments.Server.Api.Infrastructure.Errors;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Exceptions
 {
-    public class EntityNotFoundException : ApplicationException
+    public class EntityNotFoundException : ApplicationErrorException
     {
         /// <summary>
         /// Gets or sets an error code.
