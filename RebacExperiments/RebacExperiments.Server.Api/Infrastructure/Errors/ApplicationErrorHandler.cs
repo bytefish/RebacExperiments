@@ -57,17 +57,19 @@ namespace RebacExperiments.Server.Api.Infrastructure.Errors
             };
         }
 
-        public ObjectResult HandleException(HttpContext context, Exception exception)
+        public ObjectResult HandleException(HttpContext httpContext, Exception exception)
         {
             _logger.TraceMethodEntry();
 
+            _logger.LogError(exception, "Call to '{RequestPath}' failed due to an Exception", httpContext.Request.Path);
+
             return exception switch
             {
-                AuthenticationFailedException e => HandleAuthenticationException(context, e),
-                EntityConcurrencyException e => HandleEntityConcurrencyException(context, e),
-                EntityNotFoundException e => HandleEntityNotFoundException(context, e),
-                EntityUnauthorizedAccessException e => HandleEntityUnauthorizedException(context, e),
-                Exception e => HandleSystemException(context, e),
+                AuthenticationFailedException e => HandleAuthenticationException(httpContext, e),
+                EntityConcurrencyException e => HandleEntityConcurrencyException(httpContext, e),
+                EntityNotFoundException e => HandleEntityNotFoundException(httpContext, e),
+                EntityUnauthorizedAccessException e => HandleEntityUnauthorizedException(httpContext, e),
+                Exception e => HandleSystemException(httpContext, e),
             };
          }
 

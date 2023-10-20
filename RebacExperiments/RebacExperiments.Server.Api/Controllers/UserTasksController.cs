@@ -46,8 +46,6 @@ namespace RebacExperiments.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
-
                 return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
@@ -72,8 +70,6 @@ namespace RebacExperiments.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
-
                 return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
@@ -98,8 +94,6 @@ namespace RebacExperiments.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
-
                 return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
@@ -125,8 +119,6 @@ namespace RebacExperiments.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
-
                 return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
@@ -152,8 +144,6 @@ namespace RebacExperiments.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(GetUserTask));
-
                 return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
