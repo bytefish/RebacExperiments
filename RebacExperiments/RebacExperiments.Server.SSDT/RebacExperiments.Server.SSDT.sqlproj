@@ -97,7 +97,6 @@
     <None Include="Scripts\Identity\pds-120-ins-identity-relation-tuples.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Identity\Sequences\sq_Entity.sql" />
     <None Include="Scripts\Application\pds-120-ins-application-user-task.sql" />
     <Build Include="Application\Tables\Organization.sql" />
     <Build Include="Application\Sequences\sq_Organization.sql" />
@@ -110,5 +109,6 @@
     <Build Include="Identity\Tables\Role.sql" />
     <Build Include="Identity\Sequences\sq_Role.sql" />
     <None Include="Scripts\Identity\pds-110-ins-identity-roles.sql" />
+    <Build Include="Identity\Indexes\UX_Role_Name.sql" />
   </ItemGroup>
 </Project>

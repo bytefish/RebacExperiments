@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using RebacExperiments.Server.Api.Infrastructure.Authentication;
 using RebacExperiments.Server.Api.Infrastructure.Constants;
 using RebacExperiments.Server.Api.Infrastructure.Database;
@@ -25,6 +26,7 @@ namespace RebacExperiments.Server.Api.Controllers
         [HttpGet]
         [Route("{id}")]
         [Authorize(Policy = Policies.RequireUserRole)]
+        [EnableRateLimiting(Policies.PerUserRatelimit)]
         public async Task<IActionResult> GetUserTask([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, [FromRoute(Name = "id")] int userTaskId, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
@@ -55,6 +57,7 @@ namespace RebacExperiments.Server.Api.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policies.RequireUserRole)]
+        [EnableRateLimiting(Policies.PerUserRatelimit)]
         public async Task<IActionResult> GetUserTasks([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
@@ -83,6 +86,7 @@ namespace RebacExperiments.Server.Api.Controllers
 
         [HttpPost]
         [Authorize(Policy = Policies.RequireUserRole)]
+        [EnableRateLimiting(Policies.PerUserRatelimit)]
         public async Task<IActionResult> PostUserTask([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, [FromBody] UserTask userTask, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
@@ -114,6 +118,7 @@ namespace RebacExperiments.Server.Api.Controllers
         [HttpPut]
         [Route("{id}")]
         [Authorize(Policy = Policies.RequireUserRole)]
+        [EnableRateLimiting(Policies.PerUserRatelimit)]
         public async Task<IActionResult> PutUserTask([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, [FromBody] UserTask userTask, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
@@ -145,6 +150,7 @@ namespace RebacExperiments.Server.Api.Controllers
         [HttpDelete]
         [Route("{id}")]
         [Authorize(Policy = Policies.RequireUserRole)]
+        [EnableRateLimiting(Policies.PerUserRatelimit)]
         public async Task<IActionResult> DeleteUserTask([FromServices] ApplicationDbContext context, [FromServices] IUserTaskService userTaskService, [FromRoute(Name = "id")] int userTaskId, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();

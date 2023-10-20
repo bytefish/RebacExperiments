@@ -68,7 +68,8 @@ namespace RebacExperiments.Server.Api.Services
 
             if (user.LogonName != null)
             {
-                claims.Add(new Claim(ClaimTypes.Email, Convert.ToString(user.LogonName)));
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, user.LogonName));
+                claims.Add(new Claim(ClaimTypes.Email, user.LogonName));
             }
 
             // Default Claims:

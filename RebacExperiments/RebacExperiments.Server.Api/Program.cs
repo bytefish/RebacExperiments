@@ -8,6 +8,8 @@ using RebacExperiments.Server.Api.Infrastructure.Database;
 using RebacExperiments.Server.Api.Services;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.Security.Claims;
+using System.Threading.RateLimiting;
 
 // We will log to %LocalAppData%/RebacExperiments to store the Logs, so it doesn't need to be configured 
 // to a different path, when you run it on your machine.
@@ -85,6 +87,30 @@ try
     {
         options.AddPolicy(Policies.RequireUserRole, policy => policy.RequireRole(Roles.User));
         options.AddPolicy(Policies.RequireAdminRole, policy => policy.RequireRole(Roles.Administrator));
+    });
+
+    // Add the Rate Limiting
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+        options.AddPolicy(Policies.PerUserRatelimit, context =>
+        {
+            // We always have a user name
+            var username = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return RateLimitPartition.GetTokenBucketLimiter(username, key =>
+            {
+                return new()
+                {
+                    ReplenishmentPeriod = TimeSpan.FromSeconds(10),
+                    AutoReplenishment = true,
+                    TokenLimit = 100,
+                    TokensPerPeriod = 100,
+                    QueueLimit = 100,
+                };
+            });
+        });
     });
 
     var app = builder.Build();
