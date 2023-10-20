@@ -1,4 +1,6 @@
-﻿namespace RebacExperiments.Server.Api.Infrastructure.Exceptions
+﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace RebacExperiments.Server.Api.Infrastructure.Exceptions
 {
     /// <summary>
     /// Base Exception for the Application.
