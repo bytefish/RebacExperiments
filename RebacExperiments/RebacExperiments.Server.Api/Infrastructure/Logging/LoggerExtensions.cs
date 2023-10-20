@@ -37,11 +37,12 @@ namespace RebacExperiments.Server.Api.Infrastructure.Logging
             return logger.IsEnabled(LogLevel.Warning);
         }
 
-        public static void TraceMethodEntry<TLoggerType>(this ILogger<TLoggerType> logger, [CallerMemberName] string callerMemberName = "")
+        public static void TraceMethodEntry<TLoggerType>(this ILogger<TLoggerType> logger, [CallerFilePath] string? callerFilePath = null, [CallerLineNumber] int? callerLineNumber = null, [CallerMemberName] string callerMemberName = "")
         {
             if (logger.IsTraceEnabled())
             {
-                logger.LogTrace("Method Entry: {Method}", callerMemberName);
+                logger.LogTrace("Method Entry (CallerFilePath = {CallerFilePath}, CallerLineNumber = {CallerLineNumber}, CallerMemberName = {CallerMemberName})", 
+                    callerFilePath, callerLineNumber, callerMemberName);
             }
         }
     }
