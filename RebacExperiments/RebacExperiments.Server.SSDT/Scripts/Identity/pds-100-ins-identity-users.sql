@@ -17,6 +17,7 @@ USING (VALUES
     ,(4, 'Max Powers',      'Max Powers',       0, 'max@powers.localhost',  NULL, 1, @ValidFrom, @ValidTo)
     ,(5, 'James Bond',      '007',              0, 'james@bond.localhost',  NULL, 1, @ValidFrom, @ValidTo)
     ,(6, 'John Connor',     'John Connor',      0, 'john@connor.localhost', NULL, 1, @ValidFrom, @ValidTo)
+    ,(7, 'Max Mustermann',  'Max Mustermann',   1, 'max@mustermann.local',  'AQAAAAIAAYagAAAAELbMFL9utkwA7FK4QoUCZEK/jPiHhTMzuFllrszW7FuCJBHjLVBCWXJCuFFJyRllYg==', 1, @ValidFrom, @ValidTo) --5!F25GbKwU3P
 ) AS [Source]([UserID], [FullName], [PreferredName], [IsPermittedToLogon], [LogonName], [HashedPassword], [LastEditedBy], [ValidFrom], [ValidTo])
 ON ([Target].[UserID] = [Source].[UserID])
 WHEN NOT MATCHED BY TARGET THEN

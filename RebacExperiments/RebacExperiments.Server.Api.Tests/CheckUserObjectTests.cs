@@ -147,7 +147,6 @@ namespace RebacExperiments.Server.Api.Tests
             
             var isOwnerOfTask2 = await _applicationDbContext.CheckUserObject(user.Id, task2, Relations.Owner, default);
             var isViewerOfTask2 = await _applicationDbContext.CheckUserObject(user.Id, task2, Relations.Viewer, default);
-                       
 
             // Assert
             Assert.AreEqual(false, isOwnerOfTask1);

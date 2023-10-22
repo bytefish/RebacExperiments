@@ -12,6 +12,7 @@ using System.Security.Claims;
 
 namespace RebacExperiments.Server.Api.Controllers
 {
+    [Route("Authentication")]
     public class AuthenticationController : ControllerBase
     {
         private readonly ILogger<AuthenticationController> _logger;
