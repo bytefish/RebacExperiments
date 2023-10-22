@@ -101,7 +101,7 @@ namespace RebacExperiments.Server.Api.Tests
         /// :task2.id:          |   UserTask        |       owner       |   :user.id:           |       User            |   NULL
         /// </summary>
         [Test]
-        public async Task CheckUserObject_TwoUserTasksAssignedToOrganizationAndTeam()
+        public async Task CheckUserObject_TwoUserTasksAssignedToUser()
         {
             // Arrange
             var user = new User
