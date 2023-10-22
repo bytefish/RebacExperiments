@@ -137,7 +137,6 @@ namespace RebacExperiments.Server.Api.Services
             return userTask;
         }
 
-
         public async Task DeleteUserTaskAsync(ApplicationDbContext context, int userTaskId, int currentUserId, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();

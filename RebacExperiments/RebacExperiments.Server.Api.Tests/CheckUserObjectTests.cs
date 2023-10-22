@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RebacExperiments.Server.Api.Tests
 {
-    public class ListUserObjectsTests : TransactionalTestBase
+    public class CheckUserObjectTests : TransactionalTestBase
     {
         /// <summary>
         /// In this test we create a <see cref="User"/> (user) and a <see cref="UserTask"/> (task). The 'user' is member of 
@@ -27,7 +27,7 @@ namespace RebacExperiments.Server.Api.Tests
         /// :task.id:           |   UserTask        |       owner       |   :team.id:           |       Team            |   member
         /// </summary>
         [Test]
-        public async Task ListUserObjects_OneUserTaskAssignedThroughOrganizationAndTeam()
+        public async Task CheckUserObject_OneUserTaskAssignedThroughOrganizationAndTeam()
         {
             // Arrange
             var user = new User
@@ -81,38 +81,12 @@ namespace RebacExperiments.Server.Api.Tests
             await _applicationDbContext.SaveChangesAsync();
 
             // Act
-            var userTasks_Owner = _applicationDbContext
-                .ListUserObjects<UserTask>(user.Id, Relations.Owner)
-                .AsNoTracking()
-                .ToList();
-
-            var userTasks_Viewer = _applicationDbContext
-                .ListUserObjects<UserTask>(user.Id, Relations.Viewer)
-                .AsNoTracking()
-                .ToList();
-
-            var team_Member = _applicationDbContext
-                .ListUserObjects<Team>(user.Id, Relations.Member)
-                .AsNoTracking()
-                .ToList();
-
-            var organization_Member = _applicationDbContext
-                .ListUserObjects<Organization>(user.Id, Relations.Member)
-                .AsNoTracking()
-                .ToList();
+            var isOwnerOfTask = await _applicationDbContext.CheckUserObject(user.Id, task, Relations.Owner, default);
+            var isViewerOfTask = await _applicationDbContext.CheckUserObject(user.Id, task, Relations.Viewer, default);
 
             // Assert
-            Assert.AreEqual(1, userTasks_Owner.Count);
-            Assert.AreEqual(task.Id, userTasks_Owner[0].Id);
-
-            Assert.AreEqual(1, userTasks_Viewer.Count);
-            Assert.AreEqual(task.Id, userTasks_Viewer[0].Id);
-
-            Assert.AreEqual(1, team_Member.Count);
-            Assert.AreEqual(team.Id, team_Member[0].Id);
-
-            Assert.AreEqual(1, organization_Member.Count);
-            Assert.AreEqual(organization.Id, organization_Member[0].Id);
+            Assert.AreEqual(true, isOwnerOfTask);
+            Assert.AreEqual(true, isViewerOfTask);
         }
 
         /// <summary>
@@ -127,7 +101,7 @@ namespace RebacExperiments.Server.Api.Tests
         /// :task2.id:          |   UserTask        |       owner       |   :user.id:           |       User            |   NULL
         /// </summary>
         [Test]
-        public async Task ListUserObjects_TwoUserTasksAssignedToOrganizationAndTeam()
+        public async Task CheckUserObject_TwoUserTasksAssignedToOrganizationAndTeam()
         {
             // Arrange
             var user = new User
@@ -168,15 +142,19 @@ namespace RebacExperiments.Server.Api.Tests
             await _applicationDbContext.SaveChangesAsync();
 
             // Act
-            var userTasks = _applicationDbContext
-                .ListUserObjects<UserTask>(user.Id, new[] { Relations.Viewer, Relations.Owner })
-                .AsNoTracking()
-                .ToList();
+            var isOwnerOfTask1 = await _applicationDbContext.CheckUserObject(user.Id, task1, Relations.Owner, default);
+            var isViewerOfTask1 = await _applicationDbContext.CheckUserObject(user.Id, task1, Relations.Viewer, default);
+            
+            var isOwnerOfTask2 = await _applicationDbContext.CheckUserObject(user.Id, task2, Relations.Owner, default);
+            var isViewerOfTask2 = await _applicationDbContext.CheckUserObject(user.Id, task2, Relations.Viewer, default);
+                       
 
             // Assert
-            Assert.AreEqual(2, userTasks.Count);
-            Assert.IsTrue(userTasks.Any(x => x.Id == task1.Id));
-            Assert.IsTrue(userTasks.Any(x => x.Id == task2.Id));
+            Assert.AreEqual(false, isOwnerOfTask1);
+            Assert.AreEqual(true, isViewerOfTask1);  
+            
+            Assert.AreEqual(true, isOwnerOfTask2);
+            Assert.AreEqual(false, isViewerOfTask2);           
         }
     }
 }

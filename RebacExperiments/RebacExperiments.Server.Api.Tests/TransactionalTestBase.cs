@@ -33,7 +33,6 @@ namespace RebacExperiments.Server.Api.Tests
         public TransactionalTestBase()
         {
             _configuration = ReadConfiguration();
-            _applicationDbContext = GetApplicationDbContext(_configuration);
         }
 
         /// <summary>
@@ -54,6 +53,10 @@ namespace RebacExperiments.Server.Api.Tests
         [SetUp]
         protected async Task Setup()
         {
+            // Create a fresh DbContext for each test, because you don't want the 
+            // Change Tracker to cache entities and pollute the test.
+            _applicationDbContext = GetApplicationDbContext(_configuration);
+
             await OnSetupBeforeTransaction();
             await _applicationDbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted, default);
             await OnSetupInTransaction();
@@ -69,6 +72,7 @@ namespace RebacExperiments.Server.Api.Tests
             await OnTearDownInTransaction();
             await _applicationDbContext.Database.RollbackTransactionAsync(default);
             await OnTearDownAfterTransaction();
+            await _applicationDbContext.DisposeAsync();
         }
 
         /// <summary>

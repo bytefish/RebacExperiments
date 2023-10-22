@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 
 namespace RebacExperiments.Server.Api.Infrastructure.Authentication

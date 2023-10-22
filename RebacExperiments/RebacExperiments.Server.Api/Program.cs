@@ -36,10 +36,10 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container
+    builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
     builder.Services.AddSingleton<IUserService, UserService>();
     builder.Services.AddSingleton<IUserTaskService, UserTaskService>();
-    builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
-
+    
     // Logging
     builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
@@ -93,7 +93,7 @@ try
     // Add Error Handler
     builder.Services.Configure<ApplicationErrorHandlerOptions>(o =>
     {
-        o.IncludeExceptionDetails = builder.Environment.IsDevelopment();
+        o.IncludeExceptionDetails = builder.Environment.IsDevelopment() || builder.Environment.IsStaging();
     });
 
     builder.Services.AddSingleton<ApplicationErrorHandler>();

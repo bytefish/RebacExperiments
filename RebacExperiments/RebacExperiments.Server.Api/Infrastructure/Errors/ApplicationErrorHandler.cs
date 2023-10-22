@@ -69,7 +69,7 @@ namespace RebacExperiments.Server.Api.Infrastructure.Errors
                 EntityConcurrencyException e => HandleEntityConcurrencyException(httpContext, e),
                 EntityNotFoundException e => HandleEntityNotFoundException(httpContext, e),
                 EntityUnauthorizedAccessException e => HandleEntityUnauthorizedException(httpContext, e),
-                Exception e => HandleSystemException(httpContext, e),
+                Exception e => HandleSystemException(httpContext, e)
             };
          }
 

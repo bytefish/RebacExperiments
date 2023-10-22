@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using RebacExperiments.Server.Api.Dto;
 using RebacExperiments.Server.Api.Infrastructure.Database;
-using RebacExperiments.Server.Api.Infrastructure.Exceptions;
+using RebacExperiments.Server.Api.Infrastructure.Errors;
 using RebacExperiments.Server.Api.Infrastructure.Logging;
 using RebacExperiments.Server.Api.Services;
 using System.Security.Claims;
@@ -16,9 +16,12 @@ namespace RebacExperiments.Server.Api.Controllers
     {
         private readonly ILogger<AuthenticationController> _logger;
 
-        public AuthenticationController(ILogger<AuthenticationController> logger)
+        private readonly ApplicationErrorHandler _applicationErrorHandler;
+
+        public AuthenticationController(ILogger<AuthenticationController> logger, ApplicationErrorHandler applicationErrorHandler)
         {
             _logger = logger;
+            _applicationErrorHandler = applicationErrorHandler;
         }
 
         [HttpPost]
@@ -29,7 +32,7 @@ namespace RebacExperiments.Server.Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return _applicationErrorHandler.HandleInvalidModelState(HttpContext, ModelState);
             }
 
             try
@@ -54,11 +57,7 @@ namespace RebacExperiments.Server.Api.Controllers
             {
                 _logger.LogError(ex, "{ControllerAction} failed due to an Exception", nameof(SignInUser));
 
-                return ex switch
-                {
-                    AuthenticationFailedException _ => Unauthorized(),
-                    _ => StatusCode(500, "An Internal Server Error occured"),
-                };
+                return _applicationErrorHandler.HandleException(HttpContext, ex);
             }
         }
 
@@ -68,7 +67,14 @@ namespace RebacExperiments.Server.Api.Controllers
         {
             _logger.TraceMethodEntry();
 
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            try
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            } 
+            catch(Exception ex)
+            {
+                return _applicationErrorHandler.HandleException(HttpContext, ex);
+            }
 
             return Ok();
         }
