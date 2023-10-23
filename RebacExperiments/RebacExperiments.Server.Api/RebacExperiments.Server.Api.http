@@ -69,7 +69,6 @@ Content-Type: application/json
 
 GET {{RebacExperiments.Server.Api_HostAddress}}/UserTasks
 
-
 ### Delete UserTask 152 as "max@mustermann.local" (he is not the owner)
 DELETE {{RebacExperiments.Server.Api_HostAddress}}/UserTasks/152
 
