@@ -61,9 +61,9 @@ namespace RebacExperiments.Server.Api.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userTaskId, cancellationToken);
 
-            if(userTask == null)
+            if (userTask == null)
             {
-                throw new EntityNotFoundException() 
+                throw new EntityNotFoundException()
                 {
                     EntityName = nameof(UserTask),
                     EntityId = userTaskId,
@@ -72,7 +72,7 @@ namespace RebacExperiments.Server.Api.Services
 
             bool isAuthorized = await context.CheckUserObject(currentUserId, userTask, Relations.Viewer, cancellationToken);
 
-            if(!isAuthorized)
+            if (!isAuthorized)
             {
                 throw new EntityUnauthorizedAccessException()
                 {
@@ -125,7 +125,7 @@ namespace RebacExperiments.Server.Api.Services
                     .SetProperty(x => x.UserTaskStatus, userTask.UserTaskStatus)
                     .SetProperty(x => x.LastEditedBy, currentUserId), cancellationToken);
 
-            if(rowsAffected == 0)
+            if (rowsAffected == 0)
             {
                 throw new EntityConcurrencyException()
                 {
@@ -141,18 +141,6 @@ namespace RebacExperiments.Server.Api.Services
         {
             _logger.TraceMethodEntry();
 
-            bool isAuthorized = await context.CheckUserObject<UserTask>(currentUserId, userTaskId, Relations.Owner, cancellationToken);
-
-            if (!isAuthorized)
-            {
-                throw new EntityUnauthorizedAccessException()
-                {
-                    EntityName = nameof(UserTask),
-                    EntityId = userTaskId,
-                    UserId = currentUserId,
-                };
-            }
-
             using (var transaction = await context.Database.BeginTransactionAsync(cancellationToken))
             {
                 var userTask = await context.UserTasks
@@ -165,6 +153,18 @@ namespace RebacExperiments.Server.Api.Services
                     {
                         EntityName = nameof(UserTask),
                         EntityId = userTaskId,
+                    };
+                }
+
+                bool isAuthorized = await context.CheckUserObject<UserTask>(currentUserId, userTaskId, Relations.Owner, cancellationToken);
+
+                if (!isAuthorized)
+                {
+                    throw new EntityUnauthorizedAccessException()
+                    {
+                        EntityName = nameof(UserTask),
+                        EntityId = userTaskId,
+                        UserId = currentUserId,
                     };
                 }
 
